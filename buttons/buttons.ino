@@ -1,75 +1,83 @@
-const int startButton = 13;
-const int startLight = 12;
+#include <Arduino.h>
 
-const int greenButton = 11;
-const int greenLight = 5;
+// Define pin numbers for the buttons and LEDs using higher pin numbers
+const int styleButtons[] = {22, 23, 24}; // Style buttons
+const int styleLEDs[] = {49, 51, 53};    // Style LEDs
+const int sceneButtons[] = {26, 28, 30}; // Scene buttons
+const int sceneLEDs[] = {31, 32, 33};    // Scene LEDs
+const int dramaSlider = A2; // Drama slider, using analog pins
+const int comedySlider = A3; // Comedy slider
 
-const int blueButton = 10;
-const int blueLight = 4;
-
-const int yellowButton = 9;
-const int yellowLight = 3;
+// start button is very sensitive
+const int startButton = 43; // Start button, changed to a higher pin number
+int lastButtonState = HIGH; // assuming the button is in pull-up mode
+unsigned long lastDebounceTime = 0; // the last time the output pin was toggled
+unsigned long debounceDelay = 50; // the debounce time; increase if the output flickers
 
 void setup() {
-  pinMode(startButton, INPUT_PULLUP); // Use internal pull-up resistor
-  pinMode(startLight, OUTPUT);
-  
-  pinMode(greenButton, INPUT_PULLUP); // Use internal pull-up resistor
-  pinMode(greenLight, OUTPUT);
-  
-  pinMode(blueButton, INPUT_PULLUP); // Use internal pull-up resistor
-  pinMode(blueLight, OUTPUT);
-  
-  pinMode(yellowButton, INPUT_PULLUP); // Use internal pull-up resistor
-  pinMode(yellowLight, OUTPUT);
-
   Serial.begin(9600);
-  // Initially, all lights are off
-  digitalWrite(startLight, LOW);
-  digitalWrite(greenLight, LOW);
-  digitalWrite(blueLight, LOW);
-  digitalWrite(yellowLight, LOW);
+  for (int i = 0; i < 3; i++) {
+    pinMode(styleButtons[i], INPUT_PULLUP);
+    pinMode(styleLEDs[i], OUTPUT);
+    pinMode(sceneButtons[i], INPUT_PULLUP);
+    pinMode(sceneLEDs[i], OUTPUT);
+  }
+  pinMode(dramaSlider, INPUT);
+  pinMode(comedySlider, INPUT);
+  pinMode(startButton, INPUT_PULLUP);
 }
 
 void loop() {
-  static int lastStartState = HIGH; // Changed due to INPUT_PULLUP
-  int startState = digitalRead(startButton);
-
-  // Manage the start light and button press
-  if (startState == LOW && lastStartState == HIGH) { // Button press detected
-    digitalWrite(startLight, HIGH); // Temporarily turn on the start light
-    Serial.println("START");
-    digitalWrite(greenLight, LOW);
-    digitalWrite(blueLight, LOW);
-    digitalWrite(yellowLight, LOW);
-    delay(1000); // Debounce delay
-    digitalWrite(startLight, LOW); // Turn off the start light after sending signal
-
+  // Read and send style selection
+  for (int i = 0; i < 3; i++) {
+    if (digitalRead(styleButtons[i]) == LOW) {
+      Serial.print("STYLE");
+      Serial.println(i);
+      digitalWrite(styleLEDs[i], HIGH);
+    } else {
+      digitalWrite(styleLEDs[i], LOW);
+    }
   }
-  lastStartState = startState;
 
-  // Check for style/setting selection
-  checkButton(greenButton, greenLight, "GREEN");
-  checkButton(blueButton, blueLight, "BLUE");
-  checkButton(yellowButton, yellowLight, "YELLOW");
-}
-
-void checkButton(int buttonPin, int lightPin, String buttonName) {
-  static int lastButtonState = HIGH; // Changed due to INPUT_PULLUP
-  int buttonState = digitalRead(buttonPin);
-  
-  // Detect button press
-  if (buttonState == LOW && lastButtonState == HIGH) {
-    // Turn off all lights
-    digitalWrite(greenLight, LOW);
-    digitalWrite(blueLight, LOW);
-    digitalWrite(yellowLight, LOW);
-
-    // Turn on the selected light
-    digitalWrite(lightPin, HIGH);
-
-    Serial.println(buttonName);
-    delay(200); // Debounce and give Python script time to process
+  // Read and send scene selection
+  for (int i = 0; i < 3; i++) {
+    if (digitalRead(sceneButtons[i]) == LOW) {
+      Serial.print("SCENE");
+      Serial.println(i);
+      digitalWrite(sceneLEDs[i], HIGH);
+    } else {
+      digitalWrite(sceneLEDs[i], LOW);
+    }
   }
-  lastButtonState = buttonState;
-}
+
+  // Read and send drama slider value
+  int dramaValue = analogRead(dramaSlider) / 10; // Scale value to 0-100
+  Serial.print("DRAMA");
+  Serial.println(dramaValue);
+
+  // Read and send comedy slider value
+  int comedyValue = analogRead(comedySlider) / 10; // Scale value to 0-100
+  Serial.print("COMEDY");
+  Serial.println(comedyValue);
+
+  int reading = digitalRead(startButton);
+if (reading != lastButtonState) {
+    // reset the debouncing timer
+    lastDebounceTime = millis();
+  }
+
+  if ((millis() - lastDebounceTime) > debounceDelay) {
+    // whatever the reading is at, it's been there for longer than the debounce
+    // delay, so take it as the actual current state:
+
+    // if the button state has changed:
+    if (reading == LOW) {
+      Serial.println("START");
+      // Here we add a delay after recognizing a press to avoid multiple detections
+      delay(1000); // Wait for 1 second after a press is detected
+    }
+  }
+
+  // save the reading. Next time through the loop, it'll be the lastButtonState:
+  lastButtonState = reading;
+  }

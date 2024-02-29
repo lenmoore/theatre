@@ -3,13 +3,62 @@ import cv2
 import os
 from time import sleep
 
-style = "____"
-setting = "____"
 # Initialize serial port - replace 'COM3' with your Arduino's port
-ser = serial.Serial('/dev/tty.usbmodem213401', 9600, timeout=1)
+ser = serial.Serial('/dev/tty.usbmodem21101', 9600, timeout=1)
+style = "Unknown"
+setting = "Unknown"
+drama = 0
+comedy = 0
+
+def read_from_arduino():
+    global style, setting, drama, comedy
+    while ser.inWaiting() > 0:  # Check if data is available
+        line = ser.readline().decode('utf-8').strip()
+        if line.startswith("STYLE"):
+            index = int(line.replace("STYLE", ""))
+            styles = ["Romeo and Juliet", "Sopranos", "Star Trek"]
+            style = styles[index]
+            prompt_print(setting, style, drama, comedy)
+        elif line.startswith("SCENE"):
+            index = int(line.replace("SCENE", ""))
+            settings = ["Mars", "Hairdresser", "Classroom"]
+            setting = settings[index]
+            prompt_print(setting, style, drama, comedy)
+        elif line.startswith("DRAMA"):
+            drama = int(line.replace("DRAMA", ""))
+            prompt_print(setting, style, drama, comedy)
+        elif line.startswith("COMEDY"):
+            comedy = int(line.replace("COMEDY", ""))
+            prompt_print(setting, style, drama, comedy)
+        elif line == "START":
+            return True  # Start button pressed
+    return False  # Start button not pressed
+
+def prompt_print(setting, style, drama, comedy):
+    message = (f"""           The current prompt is:
+                       Please generate a two-minute improv theatre scene
+                     with the characters on the stage.
+                   Setting: {setting}
+                       Style: {style}
+                      Drama: {drama}/100
+                   Comedy: {comedy}/100
+           When you are totally sure that you're ready with the prompt,'
+                  press START.
+
+""")
+    decoded = bytes(message, "utf-8").decode("unicode_escape")
+    print(decoded)
+
+
+
 
 def pretty_print(message):
-    print(f"\n=== {message} ===\n")
+# >>> decoded_string = bytes(myString, "utf-8").decode("unicode_escape") # python3
+    message = (f"""====> {message}
+""")
+    decoded = bytes(message, "utf-8").decode("unicode_escape")
+    print(decoded)
+
 
 def capture_image(filename='photo.jpg'):
     cap = cv2.VideoCapture(0)  # Adjust the index if necessary
@@ -24,45 +73,42 @@ def capture_image(filename='photo.jpg'):
 def wait_for_start():
     pretty_print("Press START when ready.")
     while True:
-        if ser.readline().decode('utf-8').strip() == "START":
-            break
-        sleep(0.1)
-
-def select_option(options, option_type):
-    pretty_print(f"Select a {option_type} by pressing the corresponding button:")
-    for code, option in options.items():
-        print(f"{code} - {option}")
-    confirmed = False
-    selected_option = None
-    while not confirmed:
-        ser.flushInput()  # Clear the serial buffer to avoid processing stale inputs
         line = ser.readline().decode('utf-8').strip()
-        if line in options:
-            selected_option = options[line]
-            pretty_print(f"You selected {selected_option}. Press START to confirm or another button to change.")
-        elif line == "START" and selected_option:
-            confirmed = True
-    return selected_option
+        if line == "START":
+            return True  # Start button pressed, exit the loop
+        sleep(0.01)  # Check for start signal every 10ms
+
 
 def main():
-    wait_for_start()
+    global style, setting, drama, comedy
 
-    pretty_print("Hello! This is a co-creation program with GPT. Let's get started! Press START.")
-    wait_for_start()
+    pretty_print("--")
+    pretty_print("Hello! I am the Director. Let's get started!")
+    if wait_for_start():  # Wait for the first START to begin the process.
 
-    styles = {"GREEN": "Romeo and Juliet", "BLUE": "Sopranos", "YELLOW": "Star Trek"}
-    settings = {"GREEN": "Mars", "BLUE": "Hairdresser", "YELLOW": "Classroom"}
+        pretty_print("--")
+        pretty_print("I will guide you through the process of creating a theatre scene.")
+        if wait_for_start():  # Wait for the second START.
 
-    style = select_option(styles, "style")
-    setting = select_option(settings, "setting")
+            pretty_print("--")
+            pretty_print("Please add a character on each of the platforms. You can also give them props.")
+            if wait_for_start():  # Wait for the third START.
 
-    if capture_image():
-        pretty_print("Image Captured Successfully!")
-    else:
-        pretty_print("Failed to capture image.")
+                pretty_print("--")
+                pretty_print("You can tune some settings for the scene. Together we will build a prompt.")
+                if wait_for_start():  # Wait for the fourth START, then proceed to read settings.
 
-    final_prompt = f"Please generate a two-minute improv theatre scene with the characters on the image. Setting: {setting}; Style: {style}."
-    pretty_print(f"Resulted prompt would be: {final_prompt}")
+                    # Now, wait until settings are adjusted and final START is received.
+                    while not read_from_arduino():
+                        sleep(0.1)  # Adjust based on your needs, continue checking for updates from Arduino.
+
+                    # Assuming read_from_arduino() will exit once final START is received after settings are done.
+                    if capture_image():
+                        pretty_print("Image Captured Successfully!")
+                    else:
+                        pretty_print("Failed to capture image.")
+
+
 
 if __name__ == "__main__":
     main()
