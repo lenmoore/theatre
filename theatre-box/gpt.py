@@ -1,8 +1,14 @@
 import base64
 from openai import OpenAI
-from openai_key import key 
+import os
+from dotenv import load_dotenv
 
-client = OpenAI(key)
+load_dotenv()
+# oh whatever this is archived
+OPENAI_KEY = os.getenv("OPENAI_KEY")
+
+client = OpenAI()
+
 # Function to encode the image
 def encode_image(image_path):
   with open(image_path, "rb") as image_file:
@@ -16,7 +22,7 @@ base64_image = encode_image(image_path)
 
 headers = {
   "Content-Type": "application/json",
-  "Authorization": f"Bearer {key}"
+  "Authorization": f"Bearer {OPENAI_KEY}"
 }
 
 response = client.chat.completions.create(
@@ -42,6 +48,7 @@ response = client.chat.completions.create(
         }
       ]
     }
-  ]
+  ],
+  max_tokens=300,
 )
 print(response.choices[0].message.content)

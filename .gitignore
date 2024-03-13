@@ -3,6 +3,9 @@
 __pycache__/
 *.py[cod]
 *$py.class
+theatre-box/speech
+theatre-box/music
+theatre-box/pictures
 
 
 openai_key.py
