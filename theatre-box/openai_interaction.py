@@ -13,8 +13,6 @@ OPENAI_KEY = os.getenv("OPENAI_KEY")
 
 client = OpenAI(api_key=OPENAI_KEY)
 
-  # Correct way to set the API key
-
 
 def create_openai_request(image_path):
     # Encode the image
@@ -52,44 +50,6 @@ def create_openai_request(image_path):
     print(response.json())
     return response.json()
 
-# def create_openai_request(image_path):
-#     # Encode the image
-#     base64_image = encode_image(image_path)
-#
-#
-#     headers = {
-#     "Content-Type": "application/json",
-#     "Authorization": f"Bearer {OPENAI_KEY}"
-#     }
-#
-#     payload = {
-#     "model": "gpt-4-vision-preview",
-#     "messages": [
-#         {
-#         "role": "user",
-#         "content": [
-#             {
-#             "type": "text",
-#             "text": "I'm generating an improv theatre scene with the characters in the image. Please tell me who they are in the following format. LEFT: [character name]=[character clothes, profession, role: antagonist/protagonist], RIGHT: [character name]=[character clothes, profession, role: antagonist/protagonist]. PROPS: [props or other creatures in the scene]."
-#             },
-#             {
-#             "type": "image_url",
-#             "image_url": {
-#                 "url": f"data:image/jpeg;base64,{base64_image}"
-#             }
-#             }
-#         ]
-#         }
-#     ],
-#     "max_tokens": 4096
-#     }
-#
-#     response = requests.post("https://api.openai.com/v1/chat/completions", headers=headers, json=payload)
-#
-#     print(response.json())
-#     return response.json()
-
-
 def create_openai_scene(image_desc, prompt):
     print(prompt)
     response = client.chat.completions.create(
@@ -104,6 +64,14 @@ def create_openai_scene(image_desc, prompt):
         {
         "role": "system",
         "content": "The structure needs to be like this: { scene_name: [scene name], dialogue: { [ { name: 'storyteller|name|name', content: [lines], voice: 'nova|alloy|echo|fable|onyx|shimmer' } ] }  "
+        },
+        {
+        "role": "system",
+        "content": "There can only be one storyteller and two characters."
+        },
+        {
+        "role": "system",
+        "content": "There can only be one storyteller and two characters."
         },
         {
         "role": "user",

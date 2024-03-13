@@ -13,11 +13,14 @@ from playsound import playsound
 import json
 
 # Initialize serial port - replace 'COM3' with your Arduino's port
+# UNCOMMENT TO ENABLE ARDUINO INTERACTION
 # ser = serial.Serial('/dev/tty.usbmodem21101', 9600, timeout=1)
-style = "Rap Battle"
+
+# style = "storyteller werner herzog documentary"
+style = "Fish-out-of-Water"
 setting = "Haunted mansion"
-drama = 40
-comedy = 0
+drama = 100
+comedy = 100
 
 def read_from_arduino():
     global style, setting, drama, comedy
@@ -95,6 +98,7 @@ def create_prompt():
                     # Now, wait until settings are adjusted and final START is received.
                     director_says(5, "Tune the settings for the scene and press the red button when ready.")
 
+#                     UNCOMMENT TO ENABLE ARDUINO INTERACTION
 #                     while not read_from_arduino():
 #                         sleep(0.01)  # Adjust based on your needs, continue checking for updates from Arduino.
 
@@ -120,6 +124,8 @@ def main():
     speech_channel = pygame.mixer.Channel(1)  # Assign speech to channel 1
     if create_prompt():
         director_says(6, "Great! Now I will generate a theatre scene based on the final prompt:")
+
+        # todo: play waiting music
         prompt_print(setting, style, drama, comedy)
 
         prompt = (f"""           The current prompt is:
@@ -136,13 +142,18 @@ def main():
         image_path = "../pictures/Photo March 2 2024.jpg"
         result = create_openai_request(image_path)
         scene = create_openai_scene(result, prompt)
-#         scene_json = json.loads(scene)
-#         print(scene_json)
-        # convert scene to json
+        # todo: play correct background music
+#         selected_scene_music = pygame.mixer.Sound(f"music/{scene['scene_name']}.mp3")
+#         background_channel.play(selected_scene_music, loops=-1)
+        background_channel.stop()
+
         perform_scene(scene)
 
     # Stop the background music after all speech has been played
     background_channel.stop()
+    # todo: remove the files from the director and improv folders
+    director_says(8, "Thank you. I hope you enjoyed the performance. Goodbye!")
+
 
 
 if __name__ == "__main__":
