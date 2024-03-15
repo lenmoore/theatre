@@ -14,7 +14,7 @@ OPENAI_KEY = os.getenv("OPENAI_KEY")
 client = OpenAI(api_key=OPENAI_KEY)
 
 
-def create_openai_request(image_path):
+def create_openai_request(image_path, prompt):
     # Encode the image
     base64_image = encode_image(image_path)
 
@@ -32,6 +32,10 @@ def create_openai_request(image_path):
                     {
                         "type": "text",
                         "text": "I'm generating an improv theatre scene with the characters in the image. Please tell me who they are in the following format. LEFT: [character name]=[character clothes, profession, role: antagonist/protagonist, whisper: your recommendation for Whisper API voice], RIGHT: [character name]=[character clothes, profession, role: antagonist/protagonist, whisper: your recommendation for Whisper API voice]. PROPS: [props or other creatures in the scene]. Also, recommend suitable Whisper API voices for each character and a storyteller voice if necessary."
+                    },
+                    {
+                        "type": "text",
+                        "text": "the prompt that will be used for the text will be this:" + prompt + ".. so please make the characters match the scene."
                     },
                     {
                         "type": "image_url",
@@ -59,11 +63,15 @@ def create_openai_scene(image_desc, prompt):
     messages=[
         {
         "role": "system", 
-        "content": "You are a wonderfully funny TheatreBot, trained in the best methods of improv theatre. Your task is to generate the funniest text imaginable, and output it using JSON."
+        "content": "You are a TheatreBot, trained in the best methods of improv and classical theatre. Your task is to generate the funniest text for a short scene imaginable, and output it using JSON."
         },
         {
         "role": "system",
-        "content": "The structure needs to be like this: { scene_name: [scene name], dialogue: { [ { name: 'storyteller|name|name', content: [lines], voice: 'nova|alloy|echo|fable|onyx|shimmer' } ] }  "
+        "content": "The structure needs to be like this: { scene_name: [scene name], dialogue: { [ { name: 'storyteller|name|name', content: [lines], voice: voice_selected_from_options } ] }  "
+        },
+        {
+        "role": "system",
+        "content": "The voice options for the characters are as follows. alloy=deeper female. echo=average male. fable=male British. onyx=dark male, a little southern. nova=female, asserting. shimmer=female, soft, but feels hysteric."
         },
         {
         "role": "system",
@@ -71,7 +79,7 @@ def create_openai_scene(image_desc, prompt):
         },
         {
         "role": "system",
-        "content": "There can only be one storyteller and two characters."
+        "content": "If the comedy is under 60, the scene will be in the style of Werner Herzog, the storyteller's voice' will be onyx."
         },
         {
         "role": "user",

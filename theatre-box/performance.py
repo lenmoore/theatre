@@ -2,17 +2,19 @@ from openai_interaction import get_improv_whisper
 import pygame
 import time
 import os
+from printers import print_scene_name, print_dialogue
 
 def perform_scene(scene):
-    print(scene)
+
+#     print(scene)
     print(scene["scene_name"])
 
     order_number = 1
     character_channel = pygame.mixer.Channel(2)  # Assign speech to channel 1
 
     for part in scene["dialogue"]:
-        print("part")
-        print(part)
+#         print("part")
+        print_dialogue(part)
         voice = part["voice"]
         name = part["name"]
         merged_text = "... ".join(part["content"])

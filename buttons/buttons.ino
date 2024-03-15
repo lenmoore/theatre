@@ -1,34 +1,36 @@
 #include <Arduino.h>
 
 // Define pin numbers for the buttons and LEDs using higher pin numbers
-const int styleButtons[] = {22, 24, 26}; // Style buttons
-const int styleLEDs[] = {23, 25, 27};    // Style LEDs
-const int sceneButtons[] = {48, 50, 52}; // Scene buttons
-const int sceneLEDs[] = {49, 51, 53};    // Scene LEDs
-const int dramaSlider = A2; // Drama slider, using analog pins
-const int comedySlider = A3; // Comedy slider
+const int styleButtons[] = { 22, 24, 26 };  // Style buttons
+const int styleLEDs[] = { 23, 25, 27 };     // Style LEDs
+const int sceneButtons[] = { 48, 50, 52 };  // Scene buttons
+const int sceneLEDs[] = { 49, 51, 53 };     // Scene LEDs
+const int dramaSlider = A15;                // Drama slider, using analog pins
+const int comedySlider = A14;               // Comedy slider
 
-// start button is very sensitive
-const int startButton = 10; // Start button, changed to a higher pin number
-int lastButtonState = HIGH; // assuming the button is in pull-up mode
-unsigned long lastDebounceTime = 0; // the last time the output pin was toggled
-unsigned long debounceDelay = 50; // the debounce time; increase if the output flickers
+// Start button is very sensitive
+const int startButton = 10;          // Start button, changed to a higher pin number
+int lastButtonState = HIGH;           // assuming the button is not pressed initially
 
 void setup() {
   Serial.begin(9600);
+
+  // Configure style and scene buttons and LEDs
   for (int i = 0; i < 3; i++) {
     pinMode(styleButtons[i], INPUT_PULLUP);
     pinMode(styleLEDs[i], OUTPUT);
     pinMode(sceneButtons[i], INPUT_PULLUP);
     pinMode(sceneLEDs[i], OUTPUT);
   }
+
+  // Configure sliders and start button
   pinMode(dramaSlider, INPUT);
   pinMode(comedySlider, INPUT);
-  pinMode(startButton, INPUT_PULLUP);
+  pinMode(startButton, INPUT_PULLUP); // Set as INPUT_PULLUP to use the internal pull-up resistor
 }
 
 void loop() {
-  // Read and send style selection
+  // Handle style selection
   for (int i = 0; i < 3; i++) {
     if (digitalRead(styleButtons[i]) == LOW) {
       Serial.print("STYLE");
@@ -39,7 +41,7 @@ void loop() {
     }
   }
 
-  // Read and send scene selection
+  // Handle scene selection
   for (int i = 0; i < 3; i++) {
     if (digitalRead(sceneButtons[i]) == LOW) {
       Serial.print("SCENE");
@@ -50,34 +52,26 @@ void loop() {
     }
   }
 
-  // Read and send drama slider value
-  int dramaValue = analogRead(dramaSlider) / 10; // Scale value to 0-100
+  // Handle drama slider value
+  int dramaValue = analogRead(dramaSlider) / 10;  // Scale value to 0-102
   Serial.print("DRAMA");
   Serial.println(dramaValue);
 
-  // Read and send comedy slider value
-  int comedyValue = analogRead(comedySlider) / 10; // Scale value to 0-100
+  // Handle comedy slider value
+  int comedyValue = analogRead(comedySlider) / 10;  // Scale value to 0-102
   Serial.print("COMEDY");
   Serial.println(comedyValue);
 
-  int reading = digitalRead(startButton);
-if (reading != lastButtonState) {
-    // reset the debouncing timer
-    lastDebounceTime = millis();
+  // Read the start button state and check for press
+  int buttonState = digitalRead(startButton);
+  if (buttonState == LOW && lastButtonState == HIGH) {
+    Serial.println("START");
+    delay(100);  // Debounce delay to prevent multiple detections
   }
 
-  if ((millis() - lastDebounceTime) > debounceDelay) {
-    // whatever the reading is at, it's been there for longer than the debounce
-    // delay, so take it as the actual current state:
+  // Update the last button state
+  lastButtonState = buttonState;
 
-    // if the button state has changed:
-    if (reading == LOW) {
-      Serial.println("START");
-      // Here we add a delay after recognizing a press to avoid multiple detections
-      delay(1000); // Wait for 1 second after a press is detected
-    }
-  }
-
-  // save the reading. Next time through the loop, it'll be the lastButtonState:
-  lastButtonState = reading;
-  }
+  // Short delay to stabilize loop execution
+  delay(2);
+}
