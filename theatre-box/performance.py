@@ -14,7 +14,7 @@ def perform_scene(scene):
 
     for part in scene["dialogue"]:
 #         print("part")
-        print_dialogue(part)
+        print_dialogue(part, voice)
         voice = part["voice"]
         name = part["name"]
         merged_text = "... ".join(part["content"])

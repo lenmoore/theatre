@@ -1,15 +1,15 @@
 #include <Arduino.h>
 
 // Define pin numbers for the buttons and LEDs using higher pin numbers
-const int styleButtons[] = { 22, 24, 26 };  // Style buttons
+const int styleButtons[] = { 48, 24, 26 };  // Style buttons
 const int styleLEDs[] = { 23, 25, 27 };     // Style LEDs
-const int sceneButtons[] = { 48, 50, 52 };  // Scene buttons
-const int sceneLEDs[] = { 49, 51, 53 };     // Scene LEDs
+const int sceneButtons[] = { 44, 46, 48 };  // Scene buttons
+const int sceneLEDs[] = { 45, 47, 49 };     // Scene LEDs
 const int dramaSlider = A15;                // Drama slider, using analog pins
 const int comedySlider = A14;               // Comedy slider
 
 // Start button is very sensitive
-const int startButton = 10;          // Start button, changed to a higher pin number
+const int startButton = 22;          // Start button, changed to a higher pin number
 int lastButtonState = HIGH;           // assuming the button is not pressed initially
 
 void setup() {

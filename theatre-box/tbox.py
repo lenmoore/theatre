@@ -17,8 +17,8 @@ import json
 ser = serial.Serial('/dev/tty.usbmodem11401', 9600, timeout=1)
 
 # style = "storyteller werner herzog documentary"
-style = "romeo&juliet"
-setting = "90s kopli tram"
+style = "Undefined"
+setting = "Undefined"
 drama = 100
 comedy = 50
 
@@ -96,8 +96,8 @@ def wait_for_start():
             if line == "START":
                 print("START signal received")
                 return True  # Start button pressed, exit the loop
-            else:
-                print(f"Received unexpected line: {line}")
+#             else:
+#                 print(f"Received unexpected line: {line}")
         else:
             time.sleep(0.01)  # Check for start signal every 10ms, adjust as necessary for responsiveness vs CPU usage
 
@@ -148,9 +148,9 @@ def create_prompt():
             if wait_for_start():
                 director_says(5, "You can tune some settings for the scene. Together we will build a prompt.")
 
-                if wait_for_start():
+                if True:
                     # Now, wait until settings are adjusted and final START is received.
-                    director_says(6, "Tune the settings for the scene and press the red button when ready.")
+                    director_says(6, "Press the red button when ready.")
 
 #                     UNCOMMENT TO ENABLE ARDUINO INTERACTION
                     while not read_from_arduino():
@@ -166,7 +166,7 @@ def create_prompt():
 def main():
     global style, setting, drama, comedy, background_channel, speech_channel
     pygame.mixer.init() # Initialize the mixer module
-    background_music = pygame.mixer.Sound("music/TBox Theme Song.mp3") # file
+    background_music = pygame.mixer.Sound("music/theme.mp3") # file
     background_channel = pygame.mixer.Channel(0)  # Assign background music to channel 0
     background_channel.play(background_music, loops=-1)  # -1 means the music will loop indefinitely
     background_music.set_volume(0.05)
