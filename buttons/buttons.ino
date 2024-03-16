@@ -1,7 +1,7 @@
 #include <Arduino.h>
 
 // Define pin numbers for the buttons and LEDs using higher pin numbers
-const int styleButtons[] = { 48, 24, 26 };  // Style buttons
+const int styleButtons[] = { 22, 24, 26 };  // Style buttons
 const int styleLEDs[] = { 23, 25, 27 };     // Style LEDs
 const int sceneButtons[] = { 44, 46, 48 };  // Scene buttons
 const int sceneLEDs[] = { 45, 47, 49 };     // Scene LEDs
