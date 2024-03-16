@@ -10,12 +10,12 @@ from performance import perform_scene
 import requests
 from playsound import playsound
 from dotenv import load_dotenv
+import json
 
 load_dotenv()
 
 SERIAL_PORT = os.getenv("SERIAL_PORT")
 
-import json
 
 # Initialize serial port - replace 'COM3' with your Arduino's port
 # UNCOMMENT TO ENABLE ARDUINO INTERACTION
