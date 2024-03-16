@@ -69,19 +69,39 @@ def read_from_arduino():
             print(f"Error reading from Arduino: {e}")
         time.sleep(0.01)  # Small delay to avoid overwhelming the CPU
 
-# UNCOMMENT FOR ARDUINO
+
+start_received = False
+start_cooldown = 2  # Cooldown period in seconds
+
 def wait_for_start():
-    pretty_print("Waiting for big red button press...")
+    global start_received
+    pretty_print("Press the red button when ready.")
+    last_start_time = 0
     while True:
-        try:
-            if ser.inWaiting() > 0:  # Check if data is available
-                line = ser.readline().decode('ascii', errors='replace').strip()
-                if line == "START":
+        if ser.inWaiting() > 0:
+            line = ser.readline().decode('ascii', errors='replace').strip()
+            if line == "START" and (time.time() - last_start_time > start_cooldown):
+                if not start_received:
                     print("START signal received")
-                    return True  # Start button pressed, exit the loop
-        except Exception as e:
-            print(f"Error waiting for start signal: {e}")
-        time.sleep(0.01)  # Check for start signal every 10ms, adjust as necessary for responsiveness vs CPU usage
+                    start_received = True
+                    return True
+                last_start_time = time.time()
+        else:
+            time.sleep(0.01)
+
+# # UNCOMMENT FOR ARDUINO
+# def wait_for_start():
+#     pretty_print("Waiting for big red button press...")
+#     while True:
+#         try:
+#             if ser.inWaiting() > 0:  # Check if data is available
+#                 line = ser.readline().decode('ascii', errors='replace').strip()
+#                 if line == "START":
+#                     print("START signal received")
+#                     return True  # Start button pressed, exit the loop
+#         except Exception as e:
+#             print(f"Error waiting for start signal: {e}")
+#         time.sleep(0.01)  # Check for start signal every 10ms, adjust as necessary for responsiveness vs CPU usage
 
 def print_and_talk(text, voice):
     pretty_print("")

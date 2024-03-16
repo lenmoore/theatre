@@ -8,6 +8,10 @@ const int sceneLEDs[] = { 45, 47, 49 };     // Scene LEDs
 const int dramaSlider = A15;                // Drama slider, using analog pins
 const int comedySlider = A14;               // Comedy slider
 
+// Define a debounce time in milliseconds
+const unsigned long debounceTime = 500;  // Adjust this value based on your needs
+unsigned long lastDebounceTime = 0;  // When the last debounce check occurred
+
 // Start button is very sensitive
 const int startButton = 30;          // Start button, changed to a higher pin number
 int lastButtonState = HIGH;           // assuming the button is not pressed initially
@@ -64,14 +68,14 @@ void loop() {
 
   // Read the start button state and check for press
   int buttonState = digitalRead(startButton);
-  if (buttonState == LOW && lastButtonState == HIGH) {
-    Serial.println("START");
-    delay(100);  // Debounce delay to prevent multiple detections
-  }
+      if (buttonState == LOW && lastButtonState == HIGH && (millis() - lastDebounceTime) > debounceTime) {
+          // Record the time of this button press
+          lastDebounceTime = millis();
+
+          // Only print "START" if sufficient time has passed since the last press
+          Serial.println("START");
+      }
 
   // Update the last button state
   lastButtonState = buttonState;
-
-  // Short delay to stabilize loop execution
-  delay(2);
 }
