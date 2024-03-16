@@ -142,31 +142,24 @@ def director_says(order_number, text):
 
 
 def create_prompt():
-    director_says(1, "Hello! I am the Director. Let's get started! Press the red button when ready.")
+    director_says(1, "Hello! I am the Director. Let's get started!")
+    director_says(2, "I will guide you through the process of creating a theatre scene.")
+    director_says(3, "Please add a character on each of the platforms. You can also give them props.")
+    director_says(4, "When you're ready, press the red button.")
 
     if wait_for_start():
-        director_says(2, "I will guide you through the process of creating a theatre scene.")
-        if True: # lol
-            director_says(3, "Please add a character on each of the platforms. You can also give them props.")
-            director_says(4, "When you're ready, press the red button.")
+        director_says(5, "You can tune some settings for the scene. Together we will build a prompt.")
+        director_says(6, "Press the red button when ready.")
 
-            if wait_for_start():
-                director_says(5, "You can tune some settings for the scene. Together we will build a prompt.")
+        while not read_from_arduino():
+            sleep(0.01)  # Adjust based on your needs, continue checking for updates from Arduino.
 
-                if True:
-                    # Now, wait until settings are adjusted and final START is received.
-                    director_says(6, "Press the red button when ready.")
-
-#                     UNCOMMENT TO ENABLE ARDUINO INTERACTION
-                    while not read_from_arduino():
-                        sleep(0.01)  # Adjust based on your needs, continue checking for updates from Arduino.
-
-                    # Assuming read_from_arduino() will exit once final START is received after settings are done.
-                    if capture_image():
-                        pretty_print("Image captured successfully! Generating, please wait...")
-                        return True
-                    else:
-                        pretty_print("Failed to capture image.")
+        # Assuming read_from_arduino() will exit once final START is received after settings are done.
+        if capture_image():
+            pretty_print("Image captured successfully! Generating, please wait...")
+            return True
+        else:
+            pretty_print("Failed to capture image.")
 
 def main():
     global style, setting, drama, comedy, background_channel, speech_channel
