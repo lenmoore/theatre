@@ -11,6 +11,7 @@ image_paths = {
     "Diner": "backgrounds/Diner .png",
     "Enchanted mushroom forest": "backgrounds/Ench.png",
     "Enchanted forest": "backgrounds/Enchanted.png",
+    "Undefined": "backgrounds/Fairytale Castle.png",
     "Fairytale castle": "backgrounds/Fairytale Castle.png",
     "Hairdressers": "backgrounds/Hairdressers.png",
     "Pirate Ship": "backgrounds/pirateship1.png",
@@ -26,11 +27,11 @@ image_paths = {
 
 def open_image(image_name):
     root = Tk()
-    canvas = Canvas(root, width=1200, height=900)
+    canvas = Canvas(root, width=1920, height=400)
     canvas.pack()
     image = image_paths.get(image_name)
     img = PhotoImage(file=image)
-    canvas.create_image(20, 20, anchor='nw', image=img)
+    canvas.create_image(20, 20, anchor='n', image=img)
     root.mainloop()
     os.system('xdotool search --name "Konsole" windowactivate')  # Adjust "Terminal" as needed
 

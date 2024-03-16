@@ -218,6 +218,7 @@ def main():
         prompt = f"2 minute improv scene, setting: {setting}, style: {style}, drama: {drama}/100, comedy: {comedy}/100"
         pretty_print("Painting the stage...")
         print(setting)
+
         open_image(setting)
         result = create_openai_request(image_path, prompt)
         director_says(10, "Almost there!")
