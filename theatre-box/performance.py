@@ -2,7 +2,7 @@ from openai_interaction import get_improv_whisper
 import pygame
 import time
 import os
-from printers import print_scene_name, print_dialogue
+from printers import print_dialogue
 from image_controller import open_image
 
 def perform_scene(scene):

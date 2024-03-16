@@ -11,7 +11,7 @@ drama = 0
 comedy = 0
 
 
-def prompt_print(setting, style, drama, comedy):
+def print_current_prompt(setting, style, drama, comedy):
     message = (f"""           The current prompt is:
                        Please generate a two-minute improv theatre scene
                      with the characters on the stage.

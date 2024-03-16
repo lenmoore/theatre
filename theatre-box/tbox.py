@@ -4,7 +4,7 @@ import time
 import os
 from time import sleep
 from hardware import capture_image
-from printers import pretty_print, prompt_print, prompt_print_no_start
+from printers import pretty_print, print_current_prompt, print_section
 from openai_interaction import get_whisper, create_openai_request, create_openai_scene
 from performance import perform_scene
 import requests
@@ -13,6 +13,7 @@ from dotenv import load_dotenv
 import json
 import random
 from image_controller import open_image
+from colorama import Fore, Back, Style, init
 
 load_dotenv()
 
@@ -67,23 +68,26 @@ def read_from_arduino():
     global style, setting, drama, comedy
     while True:
         try:
+
+            # Print style and setting options with one selected
+            print_section("STYLES", styles, style, Back.RED)
+            print_section("SETTINGS", settings, setting, Back.GREEN)
             if ser.inWaiting() > 0:  # Check if data is available
                 line = ser.readline().decode('ascii', errors='replace').strip()
-                print(line)
                 if line.startswith("STYLE"):
                     index = int(line.replace("STYLE", ""))
                     style = styles[index]
-                    prompt_print(styles, settings, setting, style, drama, comedy)
+                    print_current_prompt(setting, style, drama, comedy)
                 elif line.startswith("SCENE"):
                     index = int(line.replace("SCENE", ""))
                     setting = settings[index]
-                    prompt_print(styles, settings, setting, style, drama, comedy)
+                    print_current_prompt(setting, style, drama, comedy)
                 elif line.startswith("DRAMA"):
                     drama = int(float(line.replace("DRAMA", "")))
-                    prompt_print(styles, settings, setting, style, drama, comedy)
+                    print_current_prompt(setting, style, drama, comedy)
                 elif line.startswith("COMEDY"):
                     comedy = int(float(line.replace("COMEDY", "")))
-                    prompt_print(styles, settings, setting, style, drama, comedy)
+                    print_current_prompt(setting, style, drama, comedy)
                 elif line == "START":
                     print("START signal received")
                     return True  # Start button pressed, exit the function
@@ -212,16 +216,17 @@ def main():
         background_music = pygame.mixer.Sound("music/loading.mp3")
         background_channel.play(background_music, loops=-1)
 
-        prompt_print_no_start(setting, style, drama, comedy)
+        print_current_prompt(setting, style, drama, comedy)
         director_says(9, "Some patience, please!")
         image_path = "../pictures/photo.jpg"
         prompt = f"2 minute improv scene, setting: {setting}, style: {style}, drama: {drama}/100, comedy: {comedy}/100"
         pretty_print("Painting the stage...")
         print(setting)
-
         open_image(setting)
+        pretty_print("Generating characters...")
         result = create_openai_request(image_path, prompt)
         director_says(10, "Almost there!")
+        pretty_print("Writing the scene...")
         scene = create_openai_scene(result, prompt)
         background_channel.stop()
         time.sleep(0.1)

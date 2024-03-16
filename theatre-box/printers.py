@@ -2,6 +2,8 @@ from colorama import Fore, Back, Style, init
 
 # Initialize Colorama
 init(autoreset=True)
+def pretty_print(content):
+    print(content)
 
 def print_with_background(text, foreground=Fore.CYAN, background=Back.BLACK, is_selected=False, total_width=60):
     # Choose a different background for the selected option
@@ -12,6 +14,38 @@ def print_with_background(text, foreground=Fore.CYAN, background=Back.BLACK, is_
     padded_text = text + ' ' * padding
     # Print with colors and padding
     print(f'{selected_background}{foreground}{padded_text}{Style.RESET_ALL}')
+
+def print_dialogue(content, voice="nova"):
+    color = Fore.GREEN
+    color = Fore.MAGENTA
+    color_back = Back.GREEN
+    if voice == "nova":
+        color = Back.CYAN
+        color = Fore.CYAN
+    elif voice == "shimmer":
+        color = Back.MAGENTA
+        color = Fore.MAGENTA
+    elif voice == "fable":
+        color = Back.YELLOW
+        color = Fore.YELLOW
+    elif voice == "echo":
+        color = Back.BLUE
+        color = Fore.BLUE
+    elif voice == "onyx":
+        color = Back.RED
+        color = Fore.RED
+    else:
+        color = Back.WHITE
+        color = Fore.WHITE
+
+    merged_text = "\n".join(content["content"])
+    print(content["name"] + ": " + color + color_back + merged_text)
+
+    merged_text = "".join(content["content"])
+    print(color + content["name"] + ": " + merged_text)
+
+    print(Style.RESET_ALL)
+    print(Style.RESET_ALL)
 
 def print_section(title, options, selected_option, background_color):
     print(Style.BRIGHT + Fore.WHITE + title)
@@ -36,9 +70,27 @@ def print_current_prompt(style, setting, drama, comedy, total_width=60):
     print(f"{Back.RED}Press the RED BUTTON to CONFIRM{Style.RESET_ALL}")
 
 def main():
+    scenes = {
+        "Carnival": "backgrounds/Carnival_1.png",
+        "Dream": "backgrounds/Carol Style .png",
+        "City street": "backgrounds/City Street 1.png",
+        "Diner": "backgrounds/Diner .png",
+        "Enchanted mushroom forest": "backgrounds/Ench.png",
+        "Enchanted forest": "backgrounds/Enchanted.png",
+        "Fairytale castle": "backgrounds/Fairytale Castle.png",
+        "Hairdressers": "backgrounds/Hairdressers.png",
+        "Pirate Ship": "backgrounds/pirateship1.png",
+        "Mars after a spaceship crash": "backgrounds/Mars New 2.png",
+        "Mars": "backgrounds/Mars.png",
+        "Dreamworld": "backgrounds/Psychedelic Dreamscape.png",
+        "Kopli tram": "backgrounds/Kopli tram 1.png",
+        "Restaurant": "backgrounds/Restaurant 3.png",
+        "Steampunk Airship": "backgrounds/Steampunk Airship 1.png",
+        "Airship bridge": "backgrounds/Steampunk Airship 2.png",
+        "Grand Budapest Hotel Lobby": "backgrounds/Wes Anderson 2.png"
+    }
     all_styles = ["Romeo and Juliet", "Rap battle", "West Side Story"]
-    all_settings = ["Mars", "Haunted mansion", "90s Kopli tram"]
-
+    all_settings = list(scenes.keys())
     selected_style = "Rap battle"
     selected_setting = "90s Kopli tram"
     drama = 60
