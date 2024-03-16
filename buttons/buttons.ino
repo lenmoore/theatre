@@ -9,7 +9,7 @@ const int dramaSlider = A15;                // Drama slider, using analog pins
 const int comedySlider = A14;               // Comedy slider
 
 // Start button is very sensitive
-const int startButton = 22;          // Start button, changed to a higher pin number
+const int startButton = 30;          // Start button, changed to a higher pin number
 int lastButtonState = HIGH;           // assuming the button is not pressed initially
 
 void setup() {
