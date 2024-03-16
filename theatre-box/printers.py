@@ -63,11 +63,10 @@ def pretty_print(message):
 
 # >>> decoded_string = bytes(myString, "utf-8").decode("unicode_escape") # python3
     print(Fore.WHITE, "====>")
-    print(Fore.WHITE, "")
-    print(Fore.WHITE, "")
-    print(Fore.WHITE, "")
     decoded = bytes(message, "utf-8").decode("unicode_escape")
     print(Fore.CYAN, decoded)
+    print(Fore.WHITE, "")
+    print(Fore.WHITE, "")
     print(Fore.WHITE, "")
     print(Fore.WHITE, "")
     print(Fore.WHITE, "")

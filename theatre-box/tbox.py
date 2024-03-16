@@ -40,72 +40,48 @@ comedy = 50
 # rap battle
 # romeo and juliet
 # fairy tale [and when it is chosen, select one from any of Grimm or HC Andersen's repertoire ]
-
 def read_from_arduino():
     global style, setting, drama, comedy
     while True:
-        if ser.inWaiting() > 0:  # Check if data is available
-            line = ser.readline().decode('ascii', errors='replace').strip()
-            if line.startswith("STYLE"):
-                index = int(line.replace("STYLE", ""))
-                styles = ["Romeo and Juliet", "Rap battle", "West Side Story"]
-                style = styles[index]
-                prompt_print(setting, style, drama, comedy)
-            elif line.startswith("SCENE"):
-                index = int(line.replace("SCENE", ""))
-                settings = ["Mars", "Haunted mansion", "90s Kopli tram"]
-                setting = settings[index]
-                prompt_print(setting, style, drama, comedy)
-            elif line.startswith("DRAMA"):
-                drama = int(float(line.replace("DRAMA", "")))
-                prompt_print(setting, style, drama, comedy)
-            elif line.startswith("COMEDY"):
-                comedy = int(float(line.replace("COMEDY", "")))
-                prompt_print(setting, style, drama, comedy)
-            elif line == "START":
-                print("START signal received")
-                return True  # Start button pressed, exit the function
-        else:
-            time.sleep(0.01)  # Small delay to avoid overwhelming the CPU
-
-# def read_from_arduino():
-#     global style, setting, drama, comedy
-#     while ser.inWaiting() > 0:  # Check if data is available
-#         line = ser.readline().decode('utf-8').strip()
-#         if line.startswith("STYLE"):
-#             index = int(line.replace("STYLE", ""))
-#             styles = ["Romeo and Juliet", "Rap battle", "West Side Story"]
-#             style = styles[index]
-#             prompt_print(setting, style, drama, comedy)
-#         elif line.startswith("SCENE"):
-#             index = int(line.replace("SCENE", ""))
-#             settings = ["Mars", "Haunted mansion", "90s Kopli tram"]
-#             setting = settings[index]
-#             prompt_print(setting, style, drama, comedy)
-#         elif line.startswith("DRAMA"):
-#             drama = int(line.replace("DRAMA", ""))
-#             prompt_print(setting, style, drama, comedy)
-#         elif line.startswith("COMEDY"):
-#             comedy = int(line.replace("COMEDY", ""))
-#             prompt_print(setting, style, drama, comedy)
-#         elif line == "START":
-#             return True  # Start button pressed
-#     return False  # Start button not pressed
+        try:
+            if ser.inWaiting() > 0:  # Check if data is available
+                line = ser.readline().decode('ascii', errors='replace').strip()
+                if line.startswith("STYLE"):
+                    index = int(line.replace("STYLE", ""))
+                    styles = ["Romeo and Juliet", "Rap battle", "West Side Story"]
+                    style = styles[index]
+                    prompt_print(setting, style, drama, comedy)
+                elif line.startswith("SCENE"):
+                    index = int(line.replace("SCENE", ""))
+                    settings = ["Mars", "Haunted mansion", "90s Kopli tram"]
+                    setting = settings[index]
+                    prompt_print(setting, style, drama, comedy)
+                elif line.startswith("DRAMA"):
+                    drama = int(float(line.replace("DRAMA", "")))
+                    prompt_print(setting, style, drama, comedy)
+                elif line.startswith("COMEDY"):
+                    comedy = int(float(line.replace("COMEDY", "")))
+                    prompt_print(setting, style, drama, comedy)
+                elif line == "START":
+                    print("START signal received")
+                    return True  # Start button pressed, exit the function
+        except Exception as e:
+            print(f"Error reading from Arduino: {e}")
+        time.sleep(0.01)  # Small delay to avoid overwhelming the CPU
 
 # UNCOMMENT FOR ARDUINO
 def wait_for_start():
-    pretty_print("Press the red button when ready.")
+    pretty_print("Waiting for big red button press...")
     while True:
-        if ser.inWaiting() > 0:  # Check if data is available
-            print(ser.readline())
-            line = ser.readline().decode('ascii', errors='replace').strip()
-            if line == "START":
-                print("START signal received")
-                return True  # Start button pressed, exit the loop
-#             else:
-#                 print(f"Received unexpected line: {line}")
-        else:
-            time.sleep(0.01)  # Check for start signal every 10ms, adjust as necessary for responsiveness vs CPU usage
+        try:
+            if ser.inWaiting() > 0:  # Check if data is available
+                line = ser.readline().decode('ascii', errors='replace').strip()
+                if line == "START":
+                    print("START signal received")
+                    return True  # Start button pressed, exit the loop
+        except Exception as e:
+            print(f"Error waiting for start signal: {e}")
+        time.sleep(0.01)  # Check for start signal every 10ms, adjust as necessary for responsiveness vs CPU usage
 
 def print_and_talk(text, voice):
     pretty_print("")
