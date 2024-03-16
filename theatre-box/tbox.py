@@ -12,6 +12,7 @@ from playsound import playsound
 from dotenv import load_dotenv
 import json
 import random
+from image_controller import open_image
 
 load_dotenv()
 
@@ -68,22 +69,21 @@ def read_from_arduino():
         try:
             if ser.inWaiting() > 0:  # Check if data is available
                 line = ser.readline().decode('ascii', errors='replace').strip()
+                print(line)
                 if line.startswith("STYLE"):
                     index = int(line.replace("STYLE", ""))
-#                     styles = ["Romeo and Juliet", "Rap battle", "West Side Story"]
                     style = styles[index]
-                    prompt_print(setting, style, drama, comedy)
+                    prompt_print(styles, settings, setting, style, drama, comedy)
                 elif line.startswith("SCENE"):
                     index = int(line.replace("SCENE", ""))
-#                     settings = ["Mars", "Haunted mansion", "90s Kopli tram"]
                     setting = settings[index]
-                    prompt_print(setting, style, drama, comedy)
+                    prompt_print(styles, settings, setting, style, drama, comedy)
                 elif line.startswith("DRAMA"):
                     drama = int(float(line.replace("DRAMA", "")))
-                    prompt_print(setting, style, drama, comedy)
+                    prompt_print(styles, settings, setting, style, drama, comedy)
                 elif line.startswith("COMEDY"):
                     comedy = int(float(line.replace("COMEDY", "")))
-                    prompt_print(setting, style, drama, comedy)
+                    prompt_print(styles, settings, setting, style, drama, comedy)
                 elif line == "START":
                     print("START signal received")
                     return True  # Start button pressed, exit the function
@@ -93,7 +93,7 @@ def read_from_arduino():
 
 
 start_received = False
-start_cooldown = 2  # Cooldown period in seconds
+start_cooldown = 1  # Cooldown period in seconds
 
 def wait_for_start():
     global start_received
@@ -109,7 +109,7 @@ def wait_for_start():
                     return True
                 last_start_time = time.time()
         else:
-            time.sleep(0.01)
+            time.sleep(0.1)
 
 # # UNCOMMENT FOR ARDUINO
 # def wait_for_start():
@@ -192,12 +192,8 @@ def main():
     random_scenes = choose_random_scenes(scenes)
     option1, option2, option3 = random_scenes
 
-    # Now you can use option1, option2, and option3 as needed
-    print(f"Option 1: {option1}")
-    print(f"Option 2: {option2}")
-    print(f"Option 3: {option3}")
-
     settings = [option1, option2, option3]
+    styles = ["Rap Battle", "Fairy Tale", "Shakespeare"]
 
     pygame.init()  # Initialize the pygame module
     pygame.mixer.init() # Initialize the mixer module
@@ -216,32 +212,19 @@ def main():
         background_music = pygame.mixer.Sound("music/loading.mp3")
         background_channel.play(background_music, loops=-1)
 
-        director_says(9, "Some patience, please!")
-
         prompt_print_no_start(setting, style, drama, comedy)
-
-        prompt = (f"""           The current prompt is:
-                               Please generate a two-minute improv theatre scene
-                             with the characters on the stage.
-                           Setting: {setting}
-                               Style: {style}
-                              Drama: {drama}/100
-                           Comedy: {comedy}/100
-
-        """)
-        image_path = "../pictures/Photo March 2 2024.jpg"
+        director_says(9, "Some patience, please!")
+        image_path = "../pictures/photo.jpg"
+        prompt = f"2 minute improv scene, setting: {setting}, style: {style}, drama: {drama}/100, comedy: {comedy}/100"
+        pretty_print("Painting the stage...")
+        print(setting)
+        open_image(setting)
         result = create_openai_request(image_path, prompt)
         director_says(10, "Almost there!")
         scene = create_openai_scene(result, prompt)
         background_channel.stop()
         time.sleep(0.1)
         director_says(9, "Oh.... I'm so excited!")
-        # open an image file
-#         image_path = f"../backgrounds/{scene['scene_name']}.jpg"
-        image_path = f"backgrounds/Carnival_1.png"
-        time.sleep(1)
-        img = pygame.image.load(image_path)
-        time.sleep(1)
 
         # todo: play correct background music
 #         selected_scene_music = pygame.mixer.Sound(f"music/{scene['scene_name']}.mp3")
