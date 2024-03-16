@@ -3,6 +3,7 @@ import pygame
 import time
 import os
 from printers import print_scene_name, print_dialogue
+from image_controller import open_image
 
 def perform_scene(scene):
 
@@ -13,14 +14,14 @@ def perform_scene(scene):
     character_channel = pygame.mixer.Channel(2)  # Assign speech to channel 1
 
     for part in scene["dialogue"]:
-#         print("part")
         voice = part["voice"]
-        print_dialogue(part, voice)
         name = part["name"]
         merged_text = "... ".join(part["content"])
         if get_improv_whisper(order_number, voice, merged_text, name):
             sound_file = f'speech/improv/{order_number}_{name}_speech.mp3'
             speech_sound = pygame.mixer.Sound(sound_file)
+            print(voice)
+            print_dialogue(part, voice)
             character_channel.play(speech_sound)
 
                 # Wait for the speech sound to finish before continuing

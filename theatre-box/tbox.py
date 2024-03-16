@@ -196,12 +196,12 @@ def main():
         background_channel.stop()
         time.sleep(0.1)
         director_says(9, "Oh.... I'm so excited!")
-        time.sleep(3)
         # open an image file
 #         image_path = f"../backgrounds/{scene['scene_name']}.jpg"
         image_path = f"backgrounds/Carnival_1.png"
+        time.sleep(1)
         img = pygame.image.load(image_path)
-        time.sleep(3)
+        time.sleep(1)
 
         # todo: play correct background music
 #         selected_scene_music = pygame.mixer.Sound(f"music/{scene['scene_name']}.mp3")

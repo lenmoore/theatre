@@ -2,25 +2,24 @@ from colorama import Fore, Back, Style
 print(Style.RESET_ALL)
 
 def print_dialogue(content, voice="nova"):
-    color = Fore.GREEN
+    color = Fore.MAGENTA
+    color_back = Back.GREEN
     if voice == "nova":
-        color = Back.CYAN
+        color = Fore.CYAN
     elif voice == "shimmer":
-        color = Back.MAGENTA
+        color = Fore.MAGENTA
     elif voice == "fable":
-        color = Back.YELLOW
+        color = Fore.YELLOW
     elif voice == "echo":
-        color = Back.BLUE
+        color = Fore.BLUE
     elif voice == "onyx":
-        color = Back.RED
+        color = Fore.RED
     else:
-        color = Back.WHITE
+        color = Fore.WHITE
 
+    merged_text = "\n".join(content["content"])
+    print(content["name"] + ": " + color + color_back + merged_text)
 
-    merged_text = "".join(content["content"])
-    print(color + content["name"] + ": " + merged_text)
-
-    print(Style.RESET_ALL)
     print(Style.RESET_ALL)
 
 def print_scene_name(content):
