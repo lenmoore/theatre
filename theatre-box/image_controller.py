@@ -5,10 +5,8 @@ os.environ['SDL_VIDEODRIVER'] = 'x11'
 os.environ['SDL_VIDEO_CENTERED'] = '1'
 
 image_paths = {
-    "90s Kopli tram": "backgrounds/tram.jpeg",
     "Carnival": "backgrounds/Carnival_1.png",
     "Pirate Ship": "backgrounds/pirateship1.png",
-    "Mars": "backgrounds/mars.webp",
     "Haunted": "backgrounds/haunted.png"
 }
 

@@ -11,6 +11,7 @@ import requests
 from playsound import playsound
 from dotenv import load_dotenv
 import json
+import random
 
 load_dotenv()
 
@@ -40,6 +41,27 @@ comedy = 50
 # rap battle
 # romeo and juliet
 # fairy tale [and when it is chosen, select one from any of Grimm or HC Andersen's repertoire ]
+
+scenes = {
+    "Carnival": "backgrounds/Carnival_1.png",
+    "Dream": "backgrounds/Carol Style .png",
+    "City street": "backgrounds/City Street 1.png",
+    "Diner": "backgrounds/Diner .png",
+    "Enchanted mushroom forest": "backgrounds/Ench.png",
+    "Enchanted forest": "backgrounds/Enchanted.png",
+    "Fairytale castle": "backgrounds/Fairytale Castle.png",
+    "Hairdressers": "backgrounds/Hairdressers.png",
+    "Pirate Ship": "backgrounds/pirateship1.png",
+    "Mars after a spaceship crash": "backgrounds/Mars New 2.png",
+    "Mars": "backgrounds/Mars.png",
+    "Dreamworld": "backgrounds/Psychedelic Dreamscape.png",
+    "Kopli tram": "backgrounds/Kopli tram 1.png",
+    "Restaurant": "backgrounds/Restaurant 3.png",
+    "Steampunk Airship": "backgrounds/Steampunk Airship 1.png",
+    "Airship bridge": "backgrounds/Steampunk Airship 2.png",
+    "Grand Budapest Hotel Lobby": "backgrounds/Wes Anderson 2.png"
+}
+
 def read_from_arduino():
     global style, setting, drama, comedy
     while True:
@@ -158,8 +180,26 @@ def create_prompt():
         else:
             pretty_print("Failed to capture image.")
 
+def choose_random_scenes(scenes, num_scenes=3):
+    selected_scenes = random.sample(list(scenes.keys()), num_scenes)
+    return selected_scenes  # Returns a list of three random scene names
+
+
 def main():
     global style, setting, drama, comedy, background_channel, speech_channel
+    global styles, settings
+
+    random_scenes = choose_random_scenes(scenes)
+    option1, option2, option3 = random_scenes
+
+    # Now you can use option1, option2, and option3 as needed
+    print(f"Option 1: {option1}")
+    print(f"Option 2: {option2}")
+    print(f"Option 3: {option3}")
+
+    settings = [option1, option2, option3]
+
+    pygame.init()  # Initialize the pygame module
     pygame.mixer.init() # Initialize the mixer module
     background_music = pygame.mixer.Sound("music/theme.mp3") # file
     background_channel = pygame.mixer.Channel(0)  # Assign background music to channel 0
