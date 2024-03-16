@@ -45,7 +45,7 @@ def read_from_arduino():
     global style, setting, drama, comedy
     while True:
         if ser.inWaiting() > 0:  # Check if data is available
-            line = ser.readline().decode('utf-8').strip()
+            line = ser.readline().decode('ascii', errors='replace').strip()
             if line.startswith("STYLE"):
                 index = int(line.replace("STYLE", ""))
                 styles = ["Romeo and Juliet", "Rap battle", "West Side Story"]
@@ -57,10 +57,10 @@ def read_from_arduino():
                 setting = settings[index]
                 prompt_print(setting, style, drama, comedy)
             elif line.startswith("DRAMA"):
-                drama = int(line.replace("DRAMA", ""))
+                drama = int(float(line.replace("DRAMA", "")))
                 prompt_print(setting, style, drama, comedy)
             elif line.startswith("COMEDY"):
-                comedy = int(line.replace("COMEDY", ""))
+                comedy = int(float(line.replace("COMEDY", "")))
                 prompt_print(setting, style, drama, comedy)
             elif line == "START":
                 print("START signal received")
@@ -97,7 +97,8 @@ def wait_for_start():
     pretty_print("Press the red button when ready.")
     while True:
         if ser.inWaiting() > 0:  # Check if data is available
-            line = ser.readline().decode('utf-8').strip()
+            print(ser.readline())
+            line = ser.readline().decode('ascii', errors='replace').strip()
             if line == "START":
                 print("START signal received")
                 return True  # Start button pressed, exit the loop

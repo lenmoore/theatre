@@ -14,8 +14,8 @@ def perform_scene(scene):
 
     for part in scene["dialogue"]:
 #         print("part")
-        print_dialogue(part, voice)
         voice = part["voice"]
+        print_dialogue(part, voice)
         name = part["name"]
         merged_text = "... ".join(part["content"])
         if get_improv_whisper(order_number, voice, merged_text, name):
