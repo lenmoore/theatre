@@ -9,12 +9,17 @@ from openai_interaction import get_whisper, create_openai_request, create_openai
 from performance import perform_scene
 import requests
 from playsound import playsound
+from dotenv import load_dotenv
+
+load_dotenv()
+
+SERIAL_PORT = os.getenv("OPENAI_KEY")
 
 import json
 
 # Initialize serial port - replace 'COM3' with your Arduino's port
 # UNCOMMENT TO ENABLE ARDUINO INTERACTION
-ser = serial.Serial('/dev/tty.usbmodem11401', 9600, timeout=1)
+ser = serial.Serial(SERIAL_PORT, 9600, timeout=1)
 
 # style = "storyteller werner herzog documentary"
 style = "Undefined"
