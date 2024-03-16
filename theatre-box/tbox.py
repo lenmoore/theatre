@@ -13,7 +13,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-SERIAL_PORT = os.getenv("OPENAI_KEY")
+SERIAL_PORT = os.getenv("SERIAL_PORT")
 
 import json
 
