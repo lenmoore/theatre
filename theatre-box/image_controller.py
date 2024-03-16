@@ -1,8 +1,10 @@
-import pygame
 import os
-from tkinter import Tk, Canvas, PhotoImage
-os.environ['SDL_VIDEODRIVER'] = 'x11'
-os.environ['SDL_VIDEO_CENTERED'] = '1'
+
+import tkinter as tk
+from tkinter import PhotoImage, Toplevel
+import threading
+
+
 
 image_paths = {
     "Carnival": "backgrounds/Carnival_1.png",
@@ -23,34 +25,52 @@ image_paths = {
     "Airship bridge": "backgrounds/Steampunk Airship 2.png",
     "Grand Budapest Hotel Lobby": "backgrounds/Wes Anderson 2.png"
 }
+def create_image_window(image_path, max_height=700):
+    # Create a top-level window
+    window = Toplevel()
+    window.title("Image Display")
 
-def open_image(image_name):
-    root = Tk()
-    canvas = Canvas(root, width=1200, height=900)
-    canvas.pack()
-    image = image_paths.get(image_name)
-    img = PhotoImage(file=image)
-    canvas.create_image(20, 20, anchor='nw', image=img)
-    root.mainloop()
-    os.system('xdotool search --name "Konsole" windowactivate')  # Adjust "Terminal" as needed
+    # Load the image
+    img = PhotoImage(file=image_path)
 
-# def open_image(scene_name):
-#     pygame.init()
-#     screen = pygame.display.set_mode((1200, 900))
-#
-#
-#
-#     image = image_paths.get(scene_name, "backgrounds/Carnival_1.png")  # Default to Carnival if not found
-#     background = pygame.image.load(image).convert()
-# #     screen.blit(background, (background, 0))
-# #     pygame.display.flip()
-#
-#     running = True
-#     while running:
-#         for event in pygame.event.get():
-#             if event.type == pygame.QUIT:
-#                 running = False
-#     pygame.quit()
+    # Resize image if it's taller than max_height
+    img_width = img.width()
+    img_height = img.height()
+    if img_height > max_height:
+        scale_factor = max_height / float(img_height)
+        img_width = int(img_width * scale_factor)
+        img_height = max_height
+        img = img.subsample(int(1/scale_factor), int(1/scale_factor))
 
+    # Create a label to display the image
+    label = tk.Label(window, image=img)
+    label.pack()
+
+    # Get screen width and height
+    screen_width = window.winfo_screenwidth()
+    screen_height = window.winfo_screenheight()
+
+    # Calculate position for the window to be at the bottom center
+    x = (screen_width - img_width) // 2
+    y = screen_height - img_height - 50  # 50 pixels from the bottom of the screen
+
+    # Set the window size and position
+    window.geometry(f'{img_width}x{img_height}+{x}+{y}')
+
+    # This is necessary to keep a reference to the image object
+    label.image = img
+
+    window.mainloop()
+
+def open_image_in_thread(image_path):
+    # Run the create_image_window function in a separate thread
+    thread = threading.Thread(target=create_image_window, args=(image_path,))
+    thread.start()
+
+# Example usage
 if __name__ == "__main__":
-    open_image("Carnival")
+    image_path = image_paths.get("Mars")  # Replace with your image path
+    open_image_in_thread(image_path)
+
+    # Your main program continues here
+    print("Main program continues to run...")
