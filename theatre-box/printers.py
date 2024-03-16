@@ -1,102 +1,58 @@
-from colorama import Fore, Back, Style
-print(Style.RESET_ALL)
+from colorama import Fore, Back, Style, init
 
-def print_dialogue(content, voice="nova"):
-    color = Fore.MAGENTA
-    color_back = Back.GREEN
-    if voice == "nova":
-        color = Fore.CYAN
-    elif voice == "shimmer":
-        color = Fore.MAGENTA
-    elif voice == "fable":
-        color = Fore.YELLOW
-    elif voice == "echo":
-        color = Fore.BLUE
-    elif voice == "onyx":
-        color = Fore.RED
-    else:
-        color = Fore.WHITE
+# Initialize Colorama
+init(autoreset=True)
 
-    merged_text = "\n".join(content["content"])
-    print(content["name"] + ": " + color + color_back + merged_text)
+def print_with_background(text, foreground=Fore.CYAN, background=Back.BLACK, is_selected=False, total_width=60):
+    # Choose a different background for the selected option
+    selected_background = Back.MAGENTA if is_selected else Back.BLACK
+    # Calculate padding
+    padding = total_width - len(text)
+    # Create padded text
+    padded_text = text + ' ' * padding
+    # Print with colors and padding
+    print(f'{selected_background}{foreground}{padded_text}{Style.RESET_ALL}')
 
-    print(Style.RESET_ALL)
+def print_section(title, options, selected_option, background_color):
+    print(Style.BRIGHT + Fore.WHITE + title)
+    max_length = max(len(option) for option in options) + len("Option X: ") + 4  # Calculate max length for padding
+    for idx, option in enumerate(options, 1):
+        # Construct the option text with "Option X:" format
+        option_text = f"Option {idx}: {option}"
+        # Highlight the selected option
+        is_selected = (option == selected_option)
+        print_with_background(option_text, Fore.WHITE, background_color, is_selected, total_width=max_length)
+    print(Style.RESET_ALL)  # Reset style after section
 
-def print_scene_name(content):
-#     print(Fore.RED + content["name"] + ":")
-#     print(Fore.GREEN + content["content"].join("..."))
-    print(Style.RESET_ALL)
-
-def prompt_print(all_styles, all_settings, setting, style, drama, comedy):
-    print(Fore.WHITE + "The options for the STYLES are as follows: ")
-    print(Back.RED + "    Option 1: " + Back.BLUE + all_styles[0])
-    print(Back.RED + "    Option 2: " + Back.BLUE + all_styles[1])
-    print(Back.RED + "    Option 3: " + Back.BLUE + all_styles[2])
-
-    print(Style.RESET_ALL)
-
-    print(Fore.WHITE + "The options for the SETTINGS are as follows: ")
-    print(Back.WHITE + "    Option 1: " + Back.GREEN + all_settings[0])
-    print(Back.WHITE + "    Option 2: " + Back.GREEN + all_settings[1])
-    print(Back.WHITE + "    Option 3: " + Back.GREEN + all_settings[2])
-    print(Style.RESET_ALL)
-
-    print(Back.CYAN + Fore.BLACK + "The current prompt is: ")
-    print(Back.BLACK + Fore.WHITE + "STYLE: " + Back.BLACK + Fore.BLUE + style)
-    print(Back.RED + "SETTING: " + Back.BLACK + Fore.BLUE + setting)
-    print("Drama" + Fore.BLUE + str(drama) + Fore.GREEN + "/100")
-    print("Comedy" + Fore.YELLOW + str(comedy) + Fore.WHITE + "/100")
-    print(Style.RESET_ALL)
-
-#     message = (f"""The current prompt is:
-
-#                     Setting: {setting}
-#                        Style: {style}
-#                       Drama: {drama}/100
-#                    Comedy: {comedy}/100
-#            When you are totally sure that you're ready with the prompt,'
-#                   press START.
-#
-# """)
-#     decoded = bytes(message, "utf-8").decode("unicode_escape")
-#     print(decoded)
-
-
-def prompt_print_no_start(setting, style, drama, comedy):
-    print(Style.RESET_ALL)
-
-    print(Back.CYAN + Fore.BLACK + "The final prompt is: ")
-    print(Back.RED + "STYLE: " + Back.BLACK + Fore.BLUE + bytes(setting, "utf-8").decode("unicode_escape"))
-    print(Back.BLACK + Fore.WHITE + "SETTING: " + Back.BLACK + Fore.BLUE + bytes(style, "utf-8").decode("unicode_escape"))
-    print("Drama" + Fore.BLUE + bytes(str(drama), "utf-8").decode("unicode_escape") + Fore.GREEN + "/100")
-    print("Comedy" + Fore.YELLOW + bytes(str(comedy), "utf-8").decode("unicode_escape") + Fore.WHITE + "/100")
-    print(Style.RESET_ALL)
-
-
-def pretty_print(message):
-    print(Style.RESET_ALL)
-
-# >>> decoded_string = bytes(myString, "utf-8").decode("unicode_escape") # python3
-    print(Fore.WHITE, "====>")
-    decoded = bytes(message, "utf-8").decode("unicode_escape")
-    print(Fore.CYAN, decoded)
-    print(Fore.WHITE, "")
-    print(Fore.WHITE, "")
-    print(Fore.WHITE, "")
-    print(Fore.WHITE, "")
-    print(Fore.WHITE, "")
-    print(Style.RESET_ALL)
-
+def print_current_prompt(style, setting, drama, comedy, total_width=60):
+    # Header for the current prompt section
+    print_with_background("The current prompt is:", Fore.WHITE, Back.CYAN, total_width=total_width)
+    # Details of the current prompt with padding
+    print_with_background(f"STYLE: {style}", Fore.BLUE, Back.BLACK, total_width=total_width)
+    print_with_background(f"SETTING: {setting}", Fore.GREEN, Back.BLACK, total_width=total_width)
+    print_with_background(f"Drama: {drama}/100", Fore.MAGENTA, Back.BLACK, total_width=total_width)
+    print_with_background(f"Comedy: {comedy}/100", Fore.YELLOW, Back.BLACK, total_width=total_width)
+    # Instruction to confirm the selection
+    print(f"{Back.RED}Press the RED BUTTON to CONFIRM{Style.RESET_ALL}")
 
 def main():
-    something = { "name": "Director", "content": "Hello! I am the Director. Let's get started!"}
-    something_else = { "name": "Director", "content": "Hello! I am the Director. Let's get started!"}
-    print_dialogue(something, "nova")
-    print_dialogue(something_else, "onyx")
-    print_dialogue(something, "echo")
-    print_dialogue(something_else, "fable")
+    all_styles = ["Romeo and Juliet", "Rap battle", "West Side Story"]
+    all_settings = ["Mars", "Haunted mansion", "90s Kopli tram"]
 
+    selected_style = "Rap battle"
+    selected_setting = "90s Kopli tram"
+    drama = 60
+    comedy = 40
 
+    # Find the maximum length of all options to set uniform width
+    total_width = max(max(len(s) for s in all_styles + all_settings) + 20, 60)
+
+    # Print style and setting options with one selected
+    print_section("STYLES", all_styles, selected_style, Back.RED)
+    print_section("SETTINGS", all_settings, selected_setting, Back.GREEN)
+
+    # Print current prompt details
+    print_current_prompt(selected_style, selected_setting, drama, comedy, total_width=total_width)
 
 if __name__ == "__main__":
     main()

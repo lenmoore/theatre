@@ -32,6 +32,8 @@ def open_image(image_name):
     img = PhotoImage(file=image)
     canvas.create_image(20, 20, anchor='nw', image=img)
     root.mainloop()
+    os.system('xdotool search --name "Konsole" windowactivate')  # Adjust "Terminal" as needed
+
 # def open_image(scene_name):
 #     pygame.init()
 #     screen = pygame.display.set_mode((1200, 900))

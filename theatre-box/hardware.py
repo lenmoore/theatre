@@ -12,7 +12,7 @@ def read_from_arduino():
             style = styles[index]
             prompt_print(setting, style, drama, comedy)
         elif line.startswith("SCENE"):
-            index = int(line.replace("SCENE", ""))
+            index = int(line.replace("SC\ENE", ""))
             settings = ["Mars", "Hairdresser", "Classroom"]
             setting = settings[index]
             prompt_print(setting, style, drama, comedy)
