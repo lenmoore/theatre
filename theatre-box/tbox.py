@@ -70,12 +70,12 @@ def read_from_arduino():
                 line = ser.readline().decode('ascii', errors='replace').strip()
                 if line.startswith("STYLE"):
                     index = int(line.replace("STYLE", ""))
-                    styles = ["Romeo and Juliet", "Rap battle", "West Side Story"]
+#                     styles = ["Romeo and Juliet", "Rap battle", "West Side Story"]
                     style = styles[index]
                     prompt_print(setting, style, drama, comedy)
                 elif line.startswith("SCENE"):
                     index = int(line.replace("SCENE", ""))
-                    settings = ["Mars", "Haunted mansion", "90s Kopli tram"]
+#                     settings = ["Mars", "Haunted mansion", "90s Kopli tram"]
                     setting = settings[index]
                     prompt_print(setting, style, drama, comedy)
                 elif line.startswith("DRAMA"):
