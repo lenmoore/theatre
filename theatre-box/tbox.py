@@ -151,6 +151,26 @@ def print_and_talk(text, voice):
     while speech_channel.get_busy():
         time.sleep(0.1)  # Sleep to avoid busy waiting
 
+def clear_folders():
+    # empty the director and improv folders
+    folder = "speech/director"
+    for the_file in os.listdir(folder):
+        file_path = os.path.join(folder, the_file)
+        try:
+            if os.path.isfile(file_path):
+                os.unlink(file_path)
+        except Exception as e:
+            print(e)
+
+    folder = "speech/improv"
+    for the_file in os.listdir(folder):
+        file_path = os.path.join(folder, the_file)
+        try:
+            if os.path.isfile(file_path):
+                os.unlink(file_path)
+        except Exception as e:
+            print(e)
+
 def director_says(order_number, text):
     pretty_print("--")
     pretty_print(text)
@@ -180,7 +200,9 @@ def create_prompt():
         # Assuming read_from_arduino() will exit once final START is received after settings are done.
         if capture_image():
             pretty_print("Image captured successfully! Generating, please wait...")
-            return True
+            # Encode the image
+            base64_image = encode_image(image_path)
+            return base64_image
         else:
             pretty_print("Failed to capture image.")
 
@@ -211,7 +233,8 @@ def main():
 
 
     speech_channel = pygame.mixer.Channel(1)  # Assign speech to channel 1
-    if create_prompt():
+    base64_image = create_prompt()
+    if base64_image():
         director_says(6, "Great! Now I will generate a theatre scene based on the final prompt:")
         background_music = pygame.mixer.Sound("music/loading.mp3")
         background_channel.play(background_music, loops=-1)
@@ -224,7 +247,7 @@ def main():
         print(setting)
         open_image(setting)
         pretty_print("Generating characters...")
-        result = create_openai_request(image_path, prompt)
+        result = create_openai_request(base64_image, prompt)
         director_says(10, "Almost there!")
         pretty_print("Writing the scene...")
         scene = create_openai_scene(result, prompt)
@@ -244,25 +267,23 @@ def main():
     background_channel.stop()
     # todo: remove the files from the director and improv folders
     director_says(8, "Thank you. I hope you enjoyed the performance. Goodbye!")
+    clear_folders()
+     # Inform user to press start to play again
+    director_says(9, "OK, press start to play again")
 
-    # empty the director and improv folders
-    folder = "speech/director"
-    for the_file in os.listdir(folder):
-        file_path = os.path.join(folder, the_file)
-        try:
-            if os.path.isfile(file_path):
-                os.unlink(file_path)
-        except Exception as e:
-            print(e)
+    # Reset global variables if necessary
+    style = "Undefined"
+    setting = "Undefined"
+    drama = 100
+    comedy = 50
+    start_received = False  # Reset the start received flag
 
-    folder = "speech/improv"
-    for the_file in os.listdir(folder):
-        file_path = os.path.join(folder, the_file)
-        try:
-            if os.path.isfile(file_path):
-                os.unlink(file_path)
-        except Exception as e:
-            print(e)
+    # Wait for the user to press start to restart the game
+    wait_for_start()
+
+    # Once start is received, call main() again to restart the game
+    main()
+
 
 
 

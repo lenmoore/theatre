@@ -34,5 +34,6 @@ def capture_image(filename='photo.jpg'):
         if not os.path.exists('pictures'):
             os.makedirs('pictures')
         cv2.imwrite(os.path.join('pictures', filename), frame)
+
     cap.release()
     return ret

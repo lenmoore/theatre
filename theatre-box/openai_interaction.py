@@ -14,9 +14,7 @@ OPENAI_KEY = os.getenv("OPENAI_KEY")
 client = OpenAI(api_key=OPENAI_KEY)
 
 
-def create_openai_request(image_path, prompt):
-    # Encode the image
-    base64_image = encode_image(image_path)
+def create_openai_request(base64_image, prompt):
 
     headers = {
         "Content-Type": "application/json",
