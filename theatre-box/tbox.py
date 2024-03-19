@@ -12,8 +12,9 @@ from playsound import playsound
 from dotenv import load_dotenv
 import json
 import random
-from image_controller import open_image
+from image_controller import open_image_in_thread
 from colorama import Fore, Back, Style, init
+from shared_event import close_window_signal
 
 load_dotenv()
 
@@ -245,7 +246,7 @@ def main():
         prompt = f"2 minute improv scene, setting: {setting}, style: {style}, drama: {drama}/100, comedy: {comedy}/100"
         pretty_print("Painting the stage...")
         print(setting)
-        open_image(setting)
+        open_image_in_thread(setting)
         pretty_print("Generating characters...")
         result = create_openai_request(base64_image, prompt)
         director_says(10, "Almost there!")
@@ -254,6 +255,7 @@ def main():
         background_channel.stop()
         time.sleep(0.1)
         director_says(9, "Oh.... I'm so excited!")
+        os.system('xdotool search --name "Konsole" | xargs xdotool windowactivate')
 
         # todo: play correct background music
 #         selected_scene_music = pygame.mixer.Sound(f"music/{scene['scene_name']}.mp3")
@@ -267,6 +269,16 @@ def main():
     background_channel.stop()
     # todo: remove the files from the director and improv folders
     director_says(8, "Thank you. I hope you enjoyed the performance. Goodbye!")
+    close_window_signal.set()
+    # empty the director and improv folders
+    folder = "speech/director"
+    for the_file in os.listdir(folder):
+        file_path = os.path.join(folder, the_file)
+        try:
+            if os.path.isfile(file_path):
+                os.unlink(file_path)
+        except Exception as e:
+            print(e)
     clear_folders()
      # Inform user to press start to play again
     director_says(9, "OK, press start to play again")

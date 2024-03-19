@@ -22,7 +22,7 @@ int selectedScene = -1;
 
 void setup() {
   Serial.begin(9600);
-
+    waveLights();
   // Configure style and scene buttons and LEDs
   for (int i = 0; i < 3; i++) {
     pinMode(styleButtons[i], INPUT_PULLUP);
@@ -42,6 +42,7 @@ void loop() {
   for (int i = 0; i < 3; i++) {
     if (digitalRead(styleButtons[i]) == LOW) {
       if (selectedStyle != i) { // Check if new selection is different from the current
+      waveLights();
         Serial.print("STYLE");
         Serial.println(i);
         selectedStyle = i; // Update the selected style
@@ -55,7 +56,8 @@ void loop() {
   for (int i = 0; i < 3; i++) {
     if (digitalRead(sceneButtons[i]) == LOW) {
       if (selectedScene != i) { // Check if new selection is different from the current
-        Serial.print("SCENE");
+          wave();
+    Serial.print("SCENE");
         Serial.println(i);
         selectedScene = i; // Update the selected scene
       }
@@ -80,7 +82,9 @@ void loop() {
     lastDebounceTime = millis();
     // Make a "wave" with the lights
     waveLights();
-    // Only print "START" if sufficient time has passed since the last press
+        waveLights();
+        waveLights();
+  // Only print "START" if sufficient time has passed since the last press
     Serial.println("START");
   }
 

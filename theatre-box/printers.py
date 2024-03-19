@@ -3,7 +3,10 @@ from colorama import Fore, Back, Style, init
 # Initialize Colorama
 init(autoreset=True)
 def pretty_print(content):
-    print(content)
+    print(Back.MAGENTA + content)
+    print("")
+    print("")
+    print("")
 
 def print_with_background(text, foreground=Fore.CYAN, background=Back.BLACK, is_selected=False, total_width=60):
     # Choose a different background for the selected option
@@ -18,18 +21,16 @@ def print_with_background(text, foreground=Fore.CYAN, background=Back.BLACK, is_
 def print_dialogue(content, voice="nova"):
     color = Fore.GREEN
     color = Fore.MAGENTA
-    color_back = Back.GREEN
     if voice == "nova":
         color = Back.CYAN
-        color = Fore.CYAN
     elif voice == "shimmer":
         color = Back.MAGENTA
         color = Fore.MAGENTA
     elif voice == "fable":
-        color = Back.YELLOW
+        color = Back.BLACK
         color = Fore.YELLOW
     elif voice == "echo":
-        color = Back.BLUE
+        color = Back.WHITE
         color = Fore.BLUE
     elif voice == "onyx":
         color = Back.RED
@@ -39,12 +40,8 @@ def print_dialogue(content, voice="nova"):
         color = Fore.WHITE
 
     merged_text = "\n".join(content["content"])
-    print(content["name"] + ": " + color + color_back + merged_text)
+    print(content["name"] + ": " + color + merged_text)
 
-    merged_text = "".join(content["content"])
-    print(color + content["name"] + ": " + merged_text)
-
-    print(Style.RESET_ALL)
     print(Style.RESET_ALL)
 
 def print_section(title, options, selected_option, background_color):

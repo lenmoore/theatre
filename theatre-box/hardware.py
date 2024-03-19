@@ -28,7 +28,7 @@ def read_from_arduino():
 
 
 def capture_image(filename='photo.jpg'):
-    cap = cv2.VideoCapture(0)  # Adjust the index if necessary
+    cap = cv2.VideoCapture("/dev/video2") # check this
     ret, frame = cap.read()
     if ret:
         if not os.path.exists('pictures'):
