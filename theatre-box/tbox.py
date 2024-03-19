@@ -284,10 +284,9 @@ def main():
     start_received = False  # Reset the start received flag
 
     # Wait for the user to press start to restart the game
-    wait_for_start()
-
-    # Once start is received, call main() again to restart the game
-    main()
+    if wait_for_start():
+        # Once start is received, call main() again to restart the game
+        main()
 
 
 
