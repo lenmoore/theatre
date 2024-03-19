@@ -235,7 +235,7 @@ def main():
 
     speech_channel = pygame.mixer.Channel(1)  # Assign speech to channel 1
     base64_image = create_prompt()
-    if base64_image():
+    if base64_image:
         director_says(6, "Great! Now I will generate a theatre scene based on the final prompt:")
         background_music = pygame.mixer.Sound("music/loading.mp3")
         background_channel.play(background_music, loops=-1)
@@ -269,7 +269,7 @@ def main():
     background_channel.stop()
     # todo: remove the files from the director and improv folders
     director_says(8, "Thank you. I hope you enjoyed the performance. Goodbye!")
-    close_window_signal.set()
+    close_window_signal.set)
     # empty the director and improv folders
     folder = "speech/director"
     for the_file in os.listdir(folder):
