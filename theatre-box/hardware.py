@@ -1,6 +1,12 @@
 from printers import print_current_prompt
 import cv2
 import os
+import base64
+
+# Function to encode the image
+def encode_image(image_path='pictures/photo.jpg'):
+  with open(image_path, "rb") as image_file:
+    return base64.b64encode(image_file.read()).decode('utf-8')
 
 def read_from_arduino():
     global style, setting, drama, comedy
@@ -28,7 +34,8 @@ def read_from_arduino():
 
 
 def capture_image(filename='photo.jpg'):
-    cap = cv2.VideoCapture("/dev/video2") # check this
+    cap = cv2.VideoCapture(0) # check this
+#     cap = cv2.VideoCapture("/dev/video2") # check this
     ret, frame = cap.read()
     if ret:
         if not os.path.exists('pictures'):

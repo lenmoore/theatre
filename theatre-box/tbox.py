@@ -3,7 +3,7 @@ import pygame
 import time
 import os
 from time import sleep
-from hardware import capture_image
+from hardware import capture_image, encode_image
 from printers import pretty_print, print_current_prompt, print_section
 from openai_interaction import get_whisper, create_openai_request, create_openai_scene
 from performance import perform_scene
@@ -156,7 +156,7 @@ def create_prompt():
         if capture_image():
             pretty_print("Image captured successfully! Generating, please wait...")
             # Encode the image
-            base64_image = encode_image(image_path)
+            base64_image = encode_image()
             return base64_image
         else:
             pretty_print("Failed to capture image.")
