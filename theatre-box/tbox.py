@@ -269,16 +269,9 @@ def main():
     background_channel.stop()
     # todo: remove the files from the director and improv folders
     director_says(8, "Thank you. I hope you enjoyed the performance. Goodbye!")
-    close_window_signal.set)
+    close_window_signal.set()
     # empty the director and improv folders
-    folder = "speech/director"
-    for the_file in os.listdir(folder):
-        file_path = os.path.join(folder, the_file)
-        try:
-            if os.path.isfile(file_path):
-                os.unlink(file_path)
-        except Exception as e:
-            print(e)
+
     clear_folders()
      # Inform user to press start to play again
     director_says(9, "OK, press start to play again")
