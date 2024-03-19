@@ -165,6 +165,10 @@ def choose_random_scenes(scenes, num_scenes=3):
     selected_scenes = random.sample(list(scenes.keys()), num_scenes)
     return selected_scenes  # Returns a list of three random scene names
 
+# todo
+# def introduce_character(position):
+#     director_says(12, f"Introducing the character on the {position} platform.")
+#     director_says(13, f"Introducing the character on the {position} platform.")
 
 def main():
     global style, setting, drama, comedy, background_channel, speech_channel
@@ -209,9 +213,9 @@ def main():
         pretty_print("Scene created!")
         background_channel.stop()
         time.sleep(0.1)
-        director_says(9, "Oh.... I'm so excited! Allow me to introduce the characters.")
-        introduce_character("left")
-        introduce_character("right")
+        director_says(9, "Oh.... I'm so excited! ")
+#         introduce_character("left")
+#         introduce_character("right")
         os.system('xdotool search --name "Konsole" | xargs xdotool windowactivate')
 
         # todo: play correct background music
