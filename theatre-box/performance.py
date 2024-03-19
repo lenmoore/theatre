@@ -6,8 +6,6 @@ from printers import print_dialogue
 from image_controller import open_image_in_thread
 
 def perform_scene(scene):
-
-#     print(scene)
     print(scene["scene_name"])
 
     order_number = 1

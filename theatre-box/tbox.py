@@ -25,25 +25,10 @@ SERIAL_PORT = os.getenv("SERIAL_PORT")
 # UNCOMMENT TO ENABLE ARDUINO INTERACTION
 ser = serial.Serial(SERIAL_PORT, 9600, timeout=1)
 
-# style = "storyteller werner herzog documentary"
 style = "Undefined"
 setting = "Undefined"
 drama = 100
 comedy = 50
-
-# SETTINGS
-# 6am at berghain
-# 90s kopli tram
-# ER waiting room 8:30am
-# festival outdoor toilet queue before main performer
-# football arena parking lot moments before the local team loses
-
-# STYLES
-# neuromancer
-# werner herzog documentary
-# rap battle
-# romeo and juliet
-# fairy tale [and when it is chosen, select one from any of Grimm or HC Andersen's repertoire ]
 
 scenes = {
     "Carnival": "backgrounds/Carnival_1.png",
@@ -69,39 +54,42 @@ def read_from_arduino():
     global style, setting, drama, comedy
     while True:
         try:
-
             # Print style and setting options with one selected
+            print("")
+            print("")
             print_section("STYLES", styles, style, Back.RED)
             print_section("SETTINGS", settings, setting, Back.GREEN)
             if ser.inWaiting() > 0:  # Check if data is available
                 line = ser.readline().decode('ascii', errors='replace').strip()
-                if line.startswith("STYLE"):
+                if line == "START":
+                    print("START signal received")
+                    return True  # Start button pressed, exit the function
+                elif line.startswith("STYLE"):
                     index = int(line.replace("STYLE", ""))
                     style = styles[index]
-                    print_current_prompt(setting, style, drama, comedy)
+#                     print_current_prompt(setting, style, drama, comedy)
                 elif line.startswith("SCENE"):
                     index = int(line.replace("SCENE", ""))
                     setting = settings[index]
-                    print_current_prompt(setting, style, drama, comedy)
+#                     print_current_prompt(setting, style, drama, comedy)
                 elif line.startswith("DRAMA"):
                     drama = int(float(line.replace("DRAMA", "")))
-                    print_current_prompt(setting, style, drama, comedy)
+#                     print_current_prompt(setting, style, drama, comedy)
                 elif line.startswith("COMEDY"):
                     comedy = int(float(line.replace("COMEDY", "")))
-                    print_current_prompt(setting, style, drama, comedy)
-                elif line == "START":
-                    print("START signal received")
-                    return True  # Start button pressed, exit the function
+#                     print_current_prompt(setting, style, drama, comedy)
+                print_current_prompt(setting, style, drama, comedy)
+
         except Exception as e:
             print(f"Error reading from Arduino: {e}")
         time.sleep(0.01)  # Small delay to avoid overwhelming the CPU
 
 
-start_received = False
-start_cooldown = 1  # Cooldown period in seconds
+start_cooldown = 0.05  # Cooldown period in seconds
 
 def wait_for_start():
     global start_received
+    start_received = False
     pretty_print("Press the red button when ready.")
     last_start_time = 0
     while True:
@@ -115,42 +103,6 @@ def wait_for_start():
                 last_start_time = time.time()
         else:
             time.sleep(0.1)
-
-# # UNCOMMENT FOR ARDUINO
-# def wait_for_start():
-#     pretty_print("Waiting for big red button press...")
-#     while True:
-#         try:
-#             if ser.inWaiting() > 0:  # Check if data is available
-#                 line = ser.readline().decode('ascii', errors='replace').strip()
-#                 if line == "START":
-#                     print("START signal received")
-#                     return True  # Start button pressed, exit the loop
-#         except Exception as e:
-#             print(f"Error waiting for start signal: {e}")
-#         time.sleep(0.01)  # Check for start signal every 10ms, adjust as necessary for responsiveness vs CPU usage
-
-def print_and_talk(text, voice):
-    pretty_print("")
-    pretty_print("")
-    pretty_print("")
-    pretty_print("")
-    pretty_print("")
-    pretty_print("")
-    pretty_print("")
-    pretty_print("")
-    pretty_print("")
-    pretty_print("")
-    pretty_print("")
-    pretty_print("--")
-    # print empty line
-    pretty_print(text)
-    get_whisper(1, "nova", text)
-    speech_channel.play(speech_sound)
-
-    # Wait for the speech sound to finish before continuing
-    while speech_channel.get_busy():
-        time.sleep(0.1)  # Sleep to avoid busy waiting
 
 def clear_folders():
     # empty the director and improv folders
@@ -186,14 +138,16 @@ def director_says(order_number, text):
 
 
 def create_prompt():
-    director_says(1, "Hello! I am the Director. Let's get started!")
-    director_says(2, "I will guide you through the process of creating a theatre scene.")
-    director_says(3, "Please add a character on each of the platforms. You can also give them props.")
-    director_says(4, "When you're ready, press the red button.")
+    director_says(1, "You are in testing mode. Uncomment directors lines.")
+#     director_says(1, "Hello! I am the Director. Let's get started!")
+#     director_says(2, "I will guide you through the process of creating a theatre scene.")
+#     director_says(3, "Please add a character on each of the platforms. You can also give them props.")
+#     director_says(4, "When you're ready, press the red button.")
 
     if wait_for_start():
-        director_says(5, "You can tune some settings for the scene. Together we will build a prompt.")
-        director_says(6, "Press the red button when ready.")
+        director_says(5, "Use console now.")
+#         director_says(5, "You can tune some settings for the scene. Together we will build a prompt.")
+#         director_says(6, "Use the console to set up your prompt. When you're ready, press the red button.")
 
         while not read_from_arduino():
             sleep(0.01)  # Adjust based on your needs, continue checking for updates from Arduino.
@@ -252,9 +206,12 @@ def main():
         director_says(10, "Almost there!")
         pretty_print("Writing the scene...")
         scene = create_openai_scene(result, prompt)
+        pretty_print("Scene created!")
         background_channel.stop()
         time.sleep(0.1)
-        director_says(9, "Oh.... I'm so excited!")
+        director_says(9, "Oh.... I'm so excited! Allow me to introduce the characters.")
+        introduce_character("left")
+        introduce_character("right")
         os.system('xdotool search --name "Konsole" | xargs xdotool windowactivate')
 
         # todo: play correct background music

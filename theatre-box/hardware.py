@@ -12,7 +12,7 @@ def read_from_arduino():
             style = styles[index]
             print_current_prompt(setting, style, drama, comedy)
         elif line.startswith("SCENE"):
-            index = int(line.replace("SC\ENE", ""))
+            index = int(line.replace("SCENE", ""))
             settings = ["Mars", "Hairdresser", "Classroom"]
             setting = settings[index]
             print_current_prompt(setting, style, drama, comedy)
