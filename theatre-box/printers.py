@@ -31,8 +31,8 @@ def print_dialogue(content, voice="nova"):
     print(Style.RESET_ALL)
 
 def print_section(title, options, selected_option, background_color):
-    print(Style.BRIGHT + Fore.WHITE + title)
-    print("section is-" + title)
+    print(Style.BRIGHT + Fore.BLACK + title)
+
     max_length = max(len(option) for option in options) + len("Option X: ") + 4  # Calculate max length for padding
     if title == "SETTINGS":
         for idx, option in enumerate(options, 1):
@@ -51,14 +51,15 @@ def print_section(title, options, selected_option, background_color):
             print_with_background(option_text, Fore.WHITE, background_color, is_selected, total_width=max_length)
     print(Style.RESET_ALL)  # Reset style after section
 
-def print_current_prompt(style, setting, drama, comedy, total_width=60):
+def print_current_prompt(setting, style, drama, comedy, total_width=60, print_dials=False):
     # Header for the current prompt section
-    print_with_background("The current prompt is:", Fore.BLACK, Back.CYAN, total_width=total_width)
+    print_with_background("Your scene will be: ", Fore.BLACK, Back.CYAN, total_width=total_width)
     # Details of the current prompt with padding
-    print_with_background(f"STYLE: {style}", Fore.BLUE, Back.WHITE, total_width=total_width)
-    print_with_background(f"SETTING: {setting}", Fore.GREEN, Back.WHITE, total_width=total_width)
-    print_with_background(f"Drama: {drama}/100", Fore.MAGENTA, Back.WHITE, total_width=total_width)
-    print_with_background(f"Comedy: {comedy}/100", Fore.YELLOW, Back.WHITE, total_width=total_width)
+    print_with_background(f"in the STYLE of: {style}", Fore.BLUE, Back.BLACK, total_width=total_width)
+    print_with_background(f"in the SETTING of: {setting}", Fore.GREEN, Back.BLACK, total_width=total_width)
+    if print_dials:
+        print_with_background(f"Drama: {drama}/100", Fore.MAGENTA, Back.BLACK, total_width=total_width)
+        print_with_background(f"Comedy: {comedy}/100", Fore.YELLOW, Back.BLACK, total_width=total_width)
     # Instruction to confirm the selection
     print(f"{Back.RED}Press the RED BUTTON to CONFIRM{Style.RESET_ALL}")
 

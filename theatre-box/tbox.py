@@ -31,9 +31,7 @@ drama = 100
 comedy = 50
 
 scenes = {
-    "userphoto": "pictures/photo.jpg",
     "Psychedelic Dreamscape": "pictures/A_psychedelic_dreamscape_5.png",
-    "Black": "backgrounds/Black.png",
     "Carnival": "backgrounds/Carnival_1.png",
     "Dream": "backgrounds/dream.png",
     "Haunted house": "backgrounds/Haunted Mansion 5.png",
@@ -61,15 +59,15 @@ scene_tracks = {
     "Dream": "music/Dream.mp3",
     "Haunted house": "music/Kummitusmaja.mp3",
     "City street": "music/Street.mp3",
-    "Diner": "music/Restaurant.mp3",
+    "Diner": "music/Diner.mp3",
     "Enchanted mushroom forest": "music/Enchanted forest.mp3",
     "Enchanted forest": "music/Enchanted forest.mp3",
     "Fairytale castle": "music/Fairytale castle.mp3",
     "Hairdressers": "music/Hairdressers.mp3",
     "Pirate Ship": "music/Piraadilaev.mp3",
     "Pirate Ship On A Cliff": "music/Piraadilaev.mp3",
-    "Mars after a spaceship crash": "music/Mars.mp3",
-    "Mars": "music/Mars2.mp3",
+    "Mars after a spaceship crash": "music/Mars Spaceship crash.mp3",
+    "Mars": "music/Mars.mp3",
     "Dreamworld": "music/Dreamworld.mp3",
     "Kopli tram": "music/Tramm Koplis.mp3",
     "Restaurant": "music/Restaurant.mp3",
@@ -112,10 +110,12 @@ def director_says(order_number, text):
         time.sleep(0.1)  # Sleep to avoid busy waiting
 
 
-def create_prompt():
+def create_prompt_old():
 #     director_says(1, "You are in testing mode. Uncomment directors lines.")
     director_says(1, "Hello, Director! Let's work on a scene for your upcoming play.")
     director_says(2, "As your assistant, I will guide you through the process of directing a theatre scene.")
+
+    set_image_as_bg("BG2")
     director_says(3, "Pick characters from in front of the stage and place them on the platforms.")
     director_says(4, "These will be the characters of our scene.")
     director_says(5, "Press the red button to continue.")
@@ -124,6 +124,7 @@ def create_prompt():
         director_says(6, "Use the two rows of buttons to select a style and a setting for the scene.")
         director_says(7, "When you're ready, press the red button.")
 
+        set_image_as_bg("BG1")
         while not read_from_arduino():
             sleep(0.01)  # Adjust based on your needs, continue checking for updates from Arduino.
 
@@ -141,6 +142,75 @@ def create_prompt():
 def choose_random_scenes(scenes, num_scenes=3):
     selected_scenes = random.sample(list(scenes.keys()), num_scenes)
     return selected_scenes  # Returns a list of three random scene names
+
+def choose_style_and_setting():
+    global style, setting
+    director_says(6, "Use the two rows of buttons to select a style and a setting for the scene.")
+    director_says(7, "When you're ready, press the red button to continue.")
+
+    while True:
+        if ser.inWaiting() > 0:
+            line = ser.readline().decode('ascii', errors='replace').strip()
+            print_current_prompt(setting, style, drama, comedy)
+
+            print_section("STYLES", styles, style, Back.RED)
+            print_section("SETTINGS", settings, setting, Back.GREEN)
+
+            if line.startswith("STYLE"):
+                index = int(line.replace("STYLE", ""))
+                style = styles[index]
+            elif line.startswith("SCENE"):
+                index = int(line.replace("SCENE", ""))
+                setting = settings[index]
+            elif line == "START":
+                if style.startswith("Undef"):
+                    director_says(31, "Please select a style using the small red buttons.")
+                elif setting.startswith("Undef"):
+                    director_says(32, "Please select a location setting using the small white buttons.")
+                else:
+                    director_says(33, "Now use the dials to set the values for drama and comedy.")
+                    return True
+
+#     print_current_prompt(setting, style, drama, comedy)
+def choose_drama_and_comedy():
+    global drama, comedy
+    global style, setting
+
+
+    while True:
+        if ser.inWaiting() > 0:
+            line = ser.readline().decode('ascii', errors='replace').strip()
+            print_current_prompt(setting, style, drama, comedy, 60, True)
+            if line.startswith("COMEDY"):
+                value_str = line.replace("COMEDY", "").strip()
+                if value_str.isdigit():
+                    comedy = int(value_str)
+            elif line.startswith("DRAMA"):
+                value_str = line.replace("DRAMA", "").strip()
+                if value_str.isdigit():
+                    drama = int(value_str)
+            elif line == "START":
+                if drama == 100 and comedy == 50:
+                    director_says(35, "Please adjust the dials to set the values for drama and comedy.")
+                else:
+                    return True
+
+def create_prompt():
+    director_says(1, "Hello, Director! Let's work on a scene for your upcoming play.")
+    director_says(2, "As your assistant, I will guide you through the process of directing a theatre scene.")
+    director_says(3, "Pick characters from in front of the stage and place them on the platforms.")
+    director_says(4, "These will be the characters of our scene.")
+    director_says(5, "Press the red button to continue.")
+    if wait_for_start():
+        if choose_style_and_setting():
+            if choose_drama_and_comedy():
+                base64_image = capture_image()
+                if base64_image:
+                    director_says(6, "Great! Now I will generate a theatre scene based on the final prompt:")
+                    # Continue with scene generation
+                    return base64_image
+                else:
+                    pretty_print("Failed to capture image.")
 
 
 def read_from_arduino():
@@ -209,9 +279,11 @@ def main():
 
     random_scenes = choose_random_scenes(scenes)
     option1, option2, option3 = random_scenes
-
     settings = [option1, option2, option3]
-    styles = ["Rap Battle", "Fairy Tale", "Shakespeare"]
+
+    random_styles = choose_random_scenes({"Rap Battle":"", "Fairy Tale":"", "Shakespeare":"", "Slapstick comedy":"", "Neuromancer":"", "Medieval bard duet":"", "Dr Seuss":""})
+    style1, style2, style3 = random_styles
+    styles = style1, style2, style3
 
     pygame.init()  # Initialize the pygame module
     pygame.mixer.init() # Initialize the mixer module
@@ -227,12 +299,11 @@ def main():
     speech_channel = pygame.mixer.Channel(1)  # Assign speech to channel 1
     base64_image = create_prompt()
     if base64_image:
-        director_says(6, "Great! Now I will generate a theatre scene based on the final prompt:")
         background_music = pygame.mixer.Sound("music/loading.mp3")
         background_music.set_volume(0.5)
         background_channel.play(background_music, loops=-1)
 
-        print_current_prompt(setting, style, drama, comedy)
+        print_current_prompt(setting, style, drama, comedy, 100, True)
         background_music.set_volume(0.05)
 
         director_says(9, "Some patience, please!")
@@ -281,7 +352,7 @@ def main():
     director_says(8, "Thank you. I hope you enjoyed the performance. Goodbye!")
     close_window_signal.set()
     # empty the director and improv folders
-    set_image_as_bg("Black")
+    set_image_as_bg("BG1")
 
     clear_folders()
      # Inform user to press start to play again

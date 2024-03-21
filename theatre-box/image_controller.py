@@ -9,8 +9,9 @@ from shared_event import close_window_signal
 
 image_paths = {
     "userphoto": "pictures/photo.jpg",
+    "BG1": "backgrounds/Taust 1.png",
+    "BG2": "backgrounds/Taust 2.png",
     "Psychedelic Dreamscape": "pictures/A_psychedelic_dreamscape_5.png",
-    "Black": "backgrounds/Black.png",
     "Carnival": "backgrounds/Carnival_1.png",
     "Dream": "backgrounds/dream.png",
     "City street": "backgrounds/City Street 1.png",

@@ -36,5 +36,7 @@ def capture_image(filename='photo.jpg'):
         cv2.imwrite(os.path.join('pictures', filename), frame)
 
     cap.release()
-    return ret
+    image_path = "pictures/photo.jpg"
+    with open(image_path, "rb") as image_file:
+        return base64.b64encode(image_file.read()).decode('utf-8')
 
