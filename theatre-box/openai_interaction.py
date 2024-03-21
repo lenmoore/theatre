@@ -2,11 +2,11 @@ from image_encoder import encode_image
 import requests
 from openai import OpenAI
 from pathlib import Path
-
+from printers import pretty_print
 import json
 import os
 from dotenv import load_dotenv
-
+import pygame
 load_dotenv()
 
 OPENAI_KEY = os.getenv("OPENAI_KEY")
@@ -45,8 +45,26 @@ def create_openai_request(base64_image, prompt):
 
     response = requests.post("https://api.openai.com/v1/chat/completions", headers=headers, json=payload)
 
+
     print(response.json())
+#     director_says(20, "Allow me to introduce the characters.")
+#     director_says(21, response.json())
+#     pretty_print(response.json())
     return response.json()
+
+def director_says(order_number, text):
+    pretty_print("--")
+    pretty_print(text)
+    speech_channel_2 = pygame.mixer.Channel(3)  # Assign background music to channel 0
+    if get_whisper(order_number, "shimmer", text):
+        sound_file = f'speech/director/{order_number}_director_speech.mp3'
+        speech_sound = pygame.mixer.Sound(sound_file)
+        speech_channel_2.play(speech_sound)
+
+        # Wait for the speech sound to finish before continuing
+    while speech_channel.get_busy():
+        time.sleep(0.1)  # Sleep to avoid busy waiting
+
 
 def create_openai_scene(image_desc, prompt):
     print(prompt)
@@ -57,7 +75,7 @@ def create_openai_scene(image_desc, prompt):
     messages=[
         {
         "role": "system", 
-        "content": "You are a TheatreBot, trained in the best methods of improv and classical theatre. Your task is to generate the funniest text for a short scene imaginable, and output it using JSON. The voice options for the characters are as follows. alloy=deeper female. echo=average male. fable=male British. onyx=dark male, a little southern. nova=female, asserting. shimmer=female, soft, but feels hysteric. There can only be one storyteller and two characters. If the comedy is under 60, the scene will be in the style of Werner Herzog, the storyteller's voice' will be onyx."
+        "content": "You are a TheatreBot, trained in the best methods of improv and classical theatre. Your task is to generate the funniest text for a short scene imaginable, and output it using JSON. The voice options for the characters are as follows. alloy=deeper female. echo=average male. fable=male British. onyx=dark male, a little southern. nova=female, asserting. shimmer=female, soft, but feels hysteric. There can only be one storyteller and two characters. If the comedy is under 60, the scene will be in the style of Werner Herzog, the storyteller's voice' will be onyx. In your input, you got descriptions of characters. Incorporate them in the sketch."
         },
         {
         "role": "system",
@@ -76,12 +94,12 @@ def create_openai_scene(image_desc, prompt):
     ]
     )
 
+    print(response)
 #     return response.choices[0].message.content
 #     print(response)
 #     something = response.json()
 #     return something["choices"][0]["message"]["content"]
     return json.loads(response.choices[0].message.content)
-    # print(response)
 
 # files in the improv folder will be like
 # 1_left_speech.mp3
@@ -100,6 +118,8 @@ def get_whisper(order_number, voice, text, character="director"):
         response.stream_to_file(speech_file_path)
         return True
     return False
+
+
 def get_improv_whisper(order_number, voice, text, character):
     speech_file_path = Path(__file__).parent / f"speech/improv/{order_number}_{character}_speech.mp3"
 

@@ -1,42 +1,35 @@
 from printers import print_current_prompt
 import cv2
 import os
+import serial
+import time
+from time import sleep
+from printers import pretty_print, print_current_prompt, print_section
+import os
 import base64
+from dotenv import load_dotenv
+load_dotenv()
+
+SERIAL_PORT = os.getenv("SERIAL_PORT")
+
+
+# Initialize serial port - replace 'COM3' with your Arduino's port
+# UNCOMMENT TO ENABLE ARDUINO INTERACTION
+ser = serial.Serial(SERIAL_PORT, 9600, timeout=1)
 
 # Function to encode the image
 def encode_image(image_path='pictures/photo.jpg'):
   with open(image_path, "rb") as image_file:
     return base64.b64encode(image_file.read()).decode('utf-8')
 
-def read_from_arduino():
-    global style, setting, drama, comedy
-    while ser.inWaiting() > 0:  # Check if data is available
-        line = ser.readline().decode('utf-8').strip()
-        if line.startswith("STYLE"):
-            index = int(line.replace("STYLE", ""))
-            styles = ["Romeo and Juliet", "Sopranos", "Star Trek"]
-            style = styles[index]
-            print_current_prompt(setting, style, drama, comedy)
-        elif line.startswith("SCENE"):
-            index = int(line.replace("SCENE", ""))
-            settings = ["Mars", "Hairdresser", "Classroom"]
-            setting = settings[index]
-            print_current_prompt(setting, style, drama, comedy)
-        elif line.startswith("DRAMA"):
-            drama = int(line.replace("DRAMA", ""))
-            print_current_prompt(setting, style, drama, comedy)
-        elif line.startswith("COMEDY"):
-            comedy = int(line.replace("COMEDY", ""))
-            print_current_prompt(setting, style, drama, comedy)
-        elif line == "START":
-            return True  # Start button pressed
-    return False  # Start button not pressed
-
-
 def capture_image(filename='photo.jpg'):
-    cap = cv2.VideoCapture(0) # check this
-#     cap = cv2.VideoCapture("/dev/video2") # check this
+#     cap = cv2.VideoCapture(0) # check this
+    cap = cv2.VideoCapture("/dev/video2") # check this
+    sleep(0.1) # camera wakes up
+
     ret, frame = cap.read()
+    sleep(0.1) # camera wakes up
+
     if ret:
         if not os.path.exists('pictures'):
             os.makedirs('pictures')
@@ -44,3 +37,4 @@ def capture_image(filename='photo.jpg'):
 
     cap.release()
     return ret
+

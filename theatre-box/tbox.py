@@ -12,7 +12,7 @@ from playsound import playsound
 from dotenv import load_dotenv
 import json
 import random
-from image_controller import open_image_in_thread
+from image_controller import set_image_as_bg, open_image_in_thread
 from colorama import Fore, Back, Style, init
 from shared_event import close_window_signal
 
@@ -31,8 +31,12 @@ drama = 100
 comedy = 50
 
 scenes = {
+    "userphoto": "pictures/photo.jpg",
+    "Psychedelic Dreamscape": "pictures/A_psychedelic_dreamscape_5.png",
+    "Black": "backgrounds/Black.png",
     "Carnival": "backgrounds/Carnival_1.png",
-    "Dream": "backgrounds/Carol Style .png",
+    "Dream": "backgrounds/dream.png",
+    "Haunted house": "backgrounds/Haunted Mansion 5.png",
     "City street": "backgrounds/City Street 1.png",
     "Diner": "backgrounds/Diner .png",
     "Enchanted mushroom forest": "backgrounds/Ench.png",
@@ -40,6 +44,7 @@ scenes = {
     "Fairytale castle": "backgrounds/Fairytale Castle.png",
     "Hairdressers": "backgrounds/Hairdressers.png",
     "Pirate Ship": "backgrounds/pirateship1.png",
+    "Pirate Ship On A Cliff": "backgrounds/Pirateship_6.png",
     "Mars after a spaceship crash": "backgrounds/Mars New 2.png",
     "Mars": "backgrounds/Mars.png",
     "Dreamworld": "backgrounds/Psychedelic Dreamscape.png",
@@ -50,59 +55,29 @@ scenes = {
     "Grand Budapest Hotel Lobby": "backgrounds/Wes Anderson 2.png"
 }
 
-def read_from_arduino():
-    global style, setting, drama, comedy
-    while True:
-        try:
-            # Print style and setting options with one selected
-            print("")
-            print("")
-            print_section("STYLES", styles, style, Back.RED)
-            print_section("SETTINGS", settings, setting, Back.GREEN)
-            if ser.inWaiting() > 0:  # Check if data is available
-                line = ser.readline().decode('ascii', errors='replace').strip()
-                if line == "START":
-                    print("START signal received")
-                    return True  # Start button pressed, exit the function
-                elif line.startswith("STYLE"):
-                    index = int(line.replace("STYLE", ""))
-                    style = styles[index]
-#                     print_current_prompt(setting, style, drama, comedy)
-                elif line.startswith("SCENE"):
-                    index = int(line.replace("SCENE", ""))
-                    setting = settings[index]
-#                     print_current_prompt(setting, style, drama, comedy)
-                elif line.startswith("DRAMA"):
-                    drama = int(float(line.replace("DRAMA", "")))
-#                     print_current_prompt(setting, style, drama, comedy)
-                elif line.startswith("COMEDY"):
-                    comedy = int(float(line.replace("COMEDY", "")))
-#                     print_current_prompt(setting, style, drama, comedy)
-                print_current_prompt(setting, style, drama, comedy)
+scene_tracks = {
+    "Psychedelic Dreamscape": "music/Dreamworld.mp3",
+    "Carnival": "music/Carnival.mp3",
+    "Dream": "music/Dream.mp3",
+    "Haunted house": "music/Kummitusmaja.mp3",
+    "City street": "music/Street.mp3",
+    "Diner": "music/Restaurant.mp3",
+    "Enchanted mushroom forest": "music/Enchanted forest.mp3",
+    "Enchanted forest": "music/Enchanted forest.mp3",
+    "Fairytale castle": "music/Fairytale castle.mp3",
+    "Hairdressers": "music/Hairdressers.mp3",
+    "Pirate Ship": "music/Piraadilaev.mp3",
+    "Pirate Ship On A Cliff": "music/Piraadilaev.mp3",
+    "Mars after a spaceship crash": "music/Mars.mp3",
+    "Mars": "music/Mars2.mp3",
+    "Dreamworld": "music/Dreamworld.mp3",
+    "Kopli tram": "music/Tramm Koplis.mp3",
+    "Restaurant": "music/Restaurant.mp3",
+    "Steampunk Airship": "music/Steampunk airship.mp3",
+    "Steampunk Airship bridge": "music/Steampunk airship.mp3",
+    "Grand Budapest Hotel Lobby": "music/Grand Budapest Hotel Lobby.mp3"
+}
 
-        except Exception as e:
-            print(f"Error reading from Arduino: {e}")
-        time.sleep(0.01)  # Small delay to avoid overwhelming the CPU
-
-
-start_cooldown = 0.05  # Cooldown period in seconds
-
-def wait_for_start():
-    global start_received
-    start_received = False
-    pretty_print("Press the red button when ready.")
-    last_start_time = 0
-    while True:
-        if ser.inWaiting() > 0:
-            line = ser.readline().decode('ascii', errors='replace').strip()
-            if line == "START" and (time.time() - last_start_time > start_cooldown):
-                if not start_received:
-                    print("START signal received")
-                    start_received = True
-                    return True
-                last_start_time = time.time()
-        else:
-            time.sleep(0.1)
 
 def clear_folders():
     # empty the director and improv folders
@@ -138,16 +113,16 @@ def director_says(order_number, text):
 
 
 def create_prompt():
-    director_says(1, "You are in testing mode. Uncomment directors lines.")
-#     director_says(1, "Hello! I am the Director. Let's get started!")
-#     director_says(2, "I will guide you through the process of creating a theatre scene.")
-#     director_says(3, "Please add a character on each of the platforms. You can also give them props.")
-#     director_says(4, "When you're ready, press the red button.")
-
+#     director_says(1, "You are in testing mode. Uncomment directors lines.")
+    director_says(1, "Hello, Director! Let's work on a scene for your upcoming play.")
+    director_says(2, "As your assistant, I will guide you through the process of directing a theatre scene.")
+    director_says(3, "Pick characters from in front of the stage and place them on the platforms.")
+    director_says(4, "These will be the characters of our scene.")
+    director_says(5, "Press the red button to continue.")
     if wait_for_start():
-        director_says(5, "Use console now.")
-#         director_says(5, "You can tune some settings for the scene. Together we will build a prompt.")
-#         director_says(6, "Use the console to set up your prompt. When you're ready, press the red button.")
+#         director_says(5, "Use console now.")
+        director_says(6, "Use the two rows of buttons to select a style and a setting for the scene.")
+        director_says(7, "When you're ready, press the red button.")
 
         while not read_from_arduino():
             sleep(0.01)  # Adjust based on your needs, continue checking for updates from Arduino.
@@ -156,7 +131,9 @@ def create_prompt():
         if capture_image():
             pretty_print("Image captured successfully! Generating, please wait...")
             # Encode the image
+
             base64_image = encode_image()
+            print("image encoded")
             return base64_image
         else:
             pretty_print("Failed to capture image.")
@@ -165,6 +142,66 @@ def choose_random_scenes(scenes, num_scenes=3):
     selected_scenes = random.sample(list(scenes.keys()), num_scenes)
     return selected_scenes  # Returns a list of three random scene names
 
+
+def read_from_arduino():
+    global style, setting, drama, comedy
+    global styles, settings
+    while True:
+        try:
+            # Print style and setting options with one selected
+            print("")
+            print("")
+            print_current_prompt(setting, style, drama, comedy)
+            print_section("STYLES", styles, style, Back.RED)
+            print_section("SETTINGS", settings, setting, Back.GREEN)
+            if ser.inWaiting() > 0:  # Check if data is available
+                line = ser.readline().decode('ascii', errors='replace').strip()
+                if line == "START":
+                    print("ENTER")
+                    if (style.startswith("Undef")):
+                        director_says(31, "Please select a style using the small red buttons.")
+                    elif (setting.startswith("Undef")):
+                        director_says(32, "Please select a location setting using the small white buttons.")
+                    else:
+                        return True  # Start button pressed, exit the function
+                elif line.startswith("STYLE"):
+                    index = int(line.replace("STYLE", ""))
+                    style = styles[index]
+#                     print_current_prompt(setting, style, drama, comedy)
+                elif line.startswith("SCENE"):
+                    index = int(line.replace("SCENE", ""))
+                    setting = settings[index]
+#                     print_current_prompt(setting, style, drama, comedy)
+                elif line.startswith("DRAMA"):
+                    drama = int(float(line.replace("DRAMA", "")))
+#                     print_current_prompt(setting, style, drama, comedy)
+                elif line.startswith("COMEDY"):
+                    comedy = int(float(line.replace("COMEDY", "")))
+#                     print_current_prompt(setting, style, drama, comedy)
+
+        except Exception as e:
+            print(f"Error reading from Arduino: {e}")
+        time.sleep(0.01)  # Small delay to avoid overwhelming the CPU
+
+
+start_cooldown = 0.05  # Cooldown period in seconds
+
+def wait_for_start():
+    global start_received
+    start_received = False
+    pretty_print("Press the red button when ready.")
+    last_start_time = 0
+    while True:
+        if ser.inWaiting() > 0:
+            line = ser.readline().decode('ascii', errors='replace').strip()
+            if line == "START" and (time.time() - last_start_time > start_cooldown):
+                if not start_received:
+                    print("En signal received")
+                    start_received = True
+                    return True
+                last_start_time = time.time()
+        else:
+            time.sleep(0.1)
 
 def main():
     global style, setting, drama, comedy, background_channel, speech_channel
@@ -192,34 +229,50 @@ def main():
     if base64_image:
         director_says(6, "Great! Now I will generate a theatre scene based on the final prompt:")
         background_music = pygame.mixer.Sound("music/loading.mp3")
+        background_music.set_volume(0.5)
         background_channel.play(background_music, loops=-1)
 
         print_current_prompt(setting, style, drama, comedy)
+        background_music.set_volume(0.05)
+
         director_says(9, "Some patience, please!")
+        background_music.set_volume(0.5)
         image_path = "../pictures/photo.jpg"
+#         open_image_in_thread("pictures/photo.jpg")
+#         open_user_photo()
         prompt = f"2 minute improv scene, setting: {setting}, style: {style}, drama: {drama}/100, comedy: {comedy}/100"
-        pretty_print("Painting the stage...")
-        print(setting)
-        open_image_in_thread(setting)
+        pretty_print("Painting the stage... The scene: " + setting)
+        set_image_as_bg(setting)
         pretty_print("Generating characters...")
+
         result = create_openai_request(base64_image, prompt)
+        background_music.set_volume(0.05)
+
         director_says(10, "Almost there!")
         pretty_print("Writing the scene...")
+        background_music.set_volume(0.5)
+
         scene = create_openai_scene(result, prompt)
         pretty_print("Scene created!")
         background_channel.stop()
         time.sleep(0.1)
-        director_says(9, "Oh.... I'm so excited! Allow me to introduce the characters.")
-        introduce_character("left")
-        introduce_character("right")
-        os.system('xdotool search --name "Konsole" | xargs xdotool windowactivate')
+        director_says(9, "Oh.... I'm so excited!  ")
+
+#         os.system('xdotool search --name "Konsole" | xargs xdotool windowactivate')
 
         # todo: play correct background music
 #         selected_scene_music = pygame.mixer.Sound(f"music/{scene['scene_name']}.mp3")
 #         background_channel.play(selected_scene_music, loops=-1)
         sceneready_music = pygame.mixer.Sound("music/scene-ready.mp3")
-        background_channel.play(sceneready_music)
 
+        background_music.set_volume(0.1)
+        background_channel.play(sceneready_music)
+        sleep(2)
+
+        if scene_tracks.get(setting):
+            background_music.set_volume(0.05)
+            scene_music = pygame.mixer.Sound(scene_tracks.get(setting))
+            background_channel.play(scene_music)
         perform_scene(scene)
 
     # Stop the background music after all speech has been played
@@ -228,6 +281,7 @@ def main():
     director_says(8, "Thank you. I hope you enjoyed the performance. Goodbye!")
     close_window_signal.set()
     # empty the director and improv folders
+    set_image_as_bg("Black")
 
     clear_folders()
      # Inform user to press start to play again
