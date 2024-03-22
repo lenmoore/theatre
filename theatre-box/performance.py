@@ -18,7 +18,7 @@ def perform_scene(scene):
         if get_improv_whisper(order_number, voice, merged_text, name):
             sound_file = f'speech/improv/{order_number}_{name}_speech.mp3'
             speech_sound = pygame.mixer.Sound(sound_file)
-            print(voice)
+            print(name)
             print_dialogue(part, voice)
             character_channel.play(speech_sound)
 
