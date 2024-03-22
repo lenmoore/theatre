@@ -18,12 +18,13 @@ from shared_event import close_window_signal
 
 load_dotenv()
 
-SERIAL_PORT = os.getenv("SERIAL_PORT")
+SERIAL_PORT1 = os.getenv("SERIAL_PORT1")
+SERIAL_PORT2 = os.getenv("SERIAL_PORT2")
 
 
 # Initialize serial port - replace 'COM3' with your Arduino's port
 # UNCOMMENT TO ENABLE ARDUINO INTERACTION
-ser = serial.Serial(SERIAL_PORT, 9600, timeout=1)
+ser = serial.Serial(SERIAL_PORT1, 9600, timeout=1)
 
 style = "Undefined"
 setting = "Undefined"
@@ -199,14 +200,17 @@ def create_prompt():
     director_says(1, "Hello, Director! Let's work on a scene for your upcoming play.")
     director_says(2, "As your assistant, I will guide you through the process of directing a theatre scene.")
     director_says(3, "Pick characters from in front of the stage and place them on the platforms.")
+    set_image_as_bg("BG2")
     director_says(4, "These will be the characters of our scene.")
     director_says(5, "Press the red button to continue.")
     if wait_for_start():
         if choose_style_and_setting():
             if choose_drama_and_comedy():
+
+                set_image_as_bg("Black")
                 base64_image = capture_image()
                 if base64_image:
-                    director_says(6, "Great! Now I will generate a theatre scene based on the final prompt:")
+                    director_says(6, "Great! Now I will generate a theatre scene based on your direction:")
                     # Continue with scene generation
                     return base64_image
                 else:
@@ -277,11 +281,12 @@ def main():
     global style, setting, drama, comedy, background_channel, speech_channel
     global styles, settings
 
+    set_image_as_bg("BG1")
     random_scenes = choose_random_scenes(scenes)
     option1, option2, option3 = random_scenes
     settings = [option1, option2, option3]
 
-    random_styles = choose_random_scenes({"Rap Battle":"", "Fairy Tale":"", "Shakespeare":"", "Slapstick comedy":"", "Neuromancer":"", "Medieval bard duet":"", "Dr Seuss":""})
+    random_styles = choose_random_scenes({"Rap Battle":"", "Fairy Tale":"", "Shakespeare":"",  "Neuromancer":"", "Medieval bard duet":"", "Dr Seuss":"", "Edgar Allan Poe": "" })
     style1, style2, style3 = random_styles
     styles = style1, style2, style3
 
@@ -349,14 +354,14 @@ def main():
     # Stop the background music after all speech has been played
     background_channel.stop()
     # todo: remove the files from the director and improv folders
-    director_says(8, "Thank you. I hope you enjoyed the performance. Goodbye!")
+    director_says(8, "..... and SCENE! I think you should write another one, director.")
     close_window_signal.set()
     # empty the director and improv folders
     set_image_as_bg("BG1")
 
     clear_folders()
      # Inform user to press start to play again
-    director_says(9, "OK, press start to play again")
+    director_says(9, "OK, press the red button to play again")
 
     # Reset global variables if necessary
     style = "Undefined"

@@ -30,7 +30,7 @@ def create_openai_request(base64_image, prompt):
                 "content": [
                     {
                         "type": "text",
-                        "text": "I'm generating an improv theatre scene with the characters in the image. Even if the image is hard to see, please try your best. Please tell me who they are in the following format. LEFT: [character name]=[character clothes, profession, role: antagonist/protagonist, whisper: your recommendation for Whisper API voice], RIGHT: [character name]=[character clothes, profession, role: antagonist/protagonist, whisper: your recommendation for Whisper API voice]. PROPS: [props or other creatures in the scene]. Also, recommend suitable Whisper API voices for each character and a storyteller voice if necessary. the prompt that will be used for the text will be this:" + prompt + ".. so please make the characters match the scene."
+                        "text": "I'm generating an improv theatre scene with the LEGO characters in the image. Even if the image is hard to see, please try your best. Please tell me who they are in the following format. LEFT: [character name]=[character clothes, profession, role: antagonist/protagonist, whisper: your recommendation for Whisper API voice], RIGHT: [character name]=[character clothes, profession, role: antagonist/protagonist, whisper: your recommendation for Whisper API voice]. PROPS: [props or other creatures in the scene]. Also, recommend suitable Whisper API voices for each character and a storyteller voice if necessary. the prompt that will be used for the text will be this:" + prompt + ".. so please make the characters match the scene."
                     },
                     {
                         "type": "image_url",
@@ -46,12 +46,28 @@ def create_openai_request(base64_image, prompt):
 
     response = requests.post("https://api.openai.com/v1/chat/completions", headers=headers, json=payload)
 
+    # Check if the request was successful
+    if response.status_code == 200:
+        json_data = response.json()
+        # Extract the content from the choices
+        content = json_data['choices'][0]['message']['content']
+        print(content)
+        return content
+    else:
+        print("Error:", response.status_code)
+        return None
 
-    print(response.json())
-#     director_says(20, "Allow me to introduce the characters.")
-#     director_says(21, response.json())
-#     pretty_print(response.json())
-    return response.json()
+#
+#
+#     json_string = response.json()
+# #     director_says(20, "Allow me to introduce the characters.")
+# #     director_says(21, response.json())
+#     data = data = json.loads(response)
+#
+#     # Extract the content from the choices
+#     content = data['choices'][0]['message']['content']
+#     print(content)
+#     return content
 
 def director_says(order_number, text):
     pretty_print("--")
@@ -66,6 +82,7 @@ def director_says(order_number, text):
     while speech_channel.get_busy():
         time.sleep(0.1)  # Sleep to avoid busy waiting
 
+#         "content": "You are a TheatreBot, trained in the best methods of improv and classical theatre. Your task is to generate the funniest text for a short scene imaginable, and output it using JSON. The voice options for the characters are as follows. alloy=deeper female. echo=average male. fable=male British. onyx=dark male, a little southern. nova=female, asserting. shimmer=female, soft, but feels hysteric. There can only be one storyteller and two characters. If the comedy is under 60, the scene will be in the style of Werner Herzog, the storyteller's voice' will be onyx. It is the most important that you use the described characters from the input. Prompt: " + prompt
 
 def create_openai_scene(image_desc, prompt):
     print(prompt)
@@ -76,11 +93,15 @@ def create_openai_scene(image_desc, prompt):
     messages=[
         {
         "role": "system", 
-        "content": "You are a TheatreBot, trained in the best methods of improv and classical theatre. Your task is to generate the funniest text for a short scene imaginable, and output it using JSON. The voice options for the characters are as follows. alloy=deeper female. echo=average male. fable=male British. onyx=dark male, a little southern. nova=female, asserting. shimmer=female, soft, but feels hysteric. There can only be one storyteller and two characters. If the comedy is under 60, the scene will be in the style of Werner Herzog, the storyteller's voice' will be onyx. In your input, you got descriptions of characters. Incorporate them in the sketch."
+        "content": "Hello, TheatreBot! Your task is to generate a text for a short scene, and output it using JSON. If the comedy level in the prompt given is under 60, the scene will be in the style of Werner Herzog, the storyteller's voice' will be onyx. It is the MOST important that you use the described characters from the input - their NAME and their VOICE need to be clearly defined. Prompt: " + prompt
         },
         {
         "role": "system",
-        "content": "The structure needs to be like this: { scene_name: [scene name], dialogue: { [ { name: 'storyteller|name|name', content: [lines], voice: voice_selected_from_options } ] }  "
+        "content": "The structure needs to be like this: { scene_name: [scene name], dialogue: { [ { name: name given in prompt, content: [lines], voice: voice_selected_from_options } ] }  "
+        },
+        {
+        "role": "system",
+        "content": "The voice options for the characters are as follows. alloy=deeper female. echo=average male. fable=male British. onyx=dark male, a little southern. nova=female, asserting. shimmer=female, soft, but feels hysteric. The Names for the characters are given in the Prompt."
         },
         {
         "role": "user",

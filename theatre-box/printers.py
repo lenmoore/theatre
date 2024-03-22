@@ -40,7 +40,7 @@ def print_section(title, options, selected_option, background_color):
             option_text = f"Option {idx}: {option}"
             # Highlight the selected option
             is_selected = (option == selected_option)
-            print_with_background(option_text, Fore.WHITE, background_color, is_selected, total_width=max_length)
+            print_with_background(option_text, Fore.BLACK, background_color, is_selected, total_width=max_length)
     else:
          for idx, option in enumerate(options, 1):
             # Construct the option text with "Option X:" format
@@ -48,7 +48,7 @@ def print_section(title, options, selected_option, background_color):
             option_text = f"Option {letters.get(idx)}: {option}"
             # Highlight the selected option
             is_selected = (option == selected_option)
-            print_with_background(option_text, Fore.WHITE, background_color, is_selected, total_width=max_length)
+            print_with_background(option_text, Fore.BLACK, background_color, is_selected, total_width=max_length)
     print(Style.RESET_ALL)  # Reset style after section
 
 def print_current_prompt(setting, style, drama, comedy, total_width=60, print_dials=False):

@@ -11,9 +11,10 @@ image_paths = {
     "userphoto": "pictures/photo.jpg",
     "BG1": "backgrounds/Taust 1.png",
     "BG2": "backgrounds/Taust 2.png",
-    "Psychedelic Dreamscape": "pictures/A_psychedelic_dreamscape_5.png",
+    "Psychedelic Dreamscape": "backgrounds/A_psychedelic_dreamscape_5.png",
     "Carnival": "backgrounds/Carnival_1.png",
     "Dream": "backgrounds/dream.png",
+    "Haunted house": "backgrounds/Haunted Mansion 5.png",
     "City street": "backgrounds/City Street 1.png",
     "Diner": "backgrounds/Diner .png",
     "Enchanted mushroom forest": "backgrounds/Ench.png",
@@ -28,7 +29,7 @@ image_paths = {
     "Kopli tram": "backgrounds/Kopli tram 1.png",
     "Restaurant": "backgrounds/Restaurant 3.png",
     "Steampunk Airship": "backgrounds/Steampunk Airship 1.png",
-    "Steampunk Airship bridge": "backgrounds/Steampunk Airship 2.png",
+    "Airship bridge": "backgrounds/Steampunk Airship 2.png",
     "Grand Budapest Hotel Lobby": "backgrounds/Wes Anderson 2.png"
 }
 def create_image_window(image_path, max_height=1000):
