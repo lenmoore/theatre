@@ -197,16 +197,15 @@ def choose_drama_and_comedy():
                     return True
 
 def create_prompt():
-    director_says(1, "Hello, Director! Let's work on a scene for your upcoming play.")
-    director_says(2, "As your assistant, I will guide you through the process of directing a theatre scene.")
+    director_says(1, "Hello, Director!")
+    director_says(2, "I will guide you through the process of directing a theatre scene for your upcoming play.")
     director_says(3, "Pick characters from in front of the stage and place them on the platforms.")
     set_image_as_bg("BG2")
-    director_says(4, "These will be the characters of our scene.")
+    director_says(4, "These will be the characters of our scene. I know you'll make the right choice.")
     director_says(5, "Press the red button to continue.")
     if wait_for_start():
         if choose_style_and_setting():
             if choose_drama_and_comedy():
-
                 set_image_as_bg("Black")
                 base64_image = capture_image()
                 if base64_image:
@@ -223,6 +222,8 @@ def read_from_arduino():
     while True:
         try:
             # Print style and setting options with one selected
+            print("")
+            print("")
             print("")
             print("")
             print_current_prompt(setting, style, drama, comedy)
@@ -354,7 +355,7 @@ def main():
     # Stop the background music after all speech has been played
     background_channel.stop()
     # todo: remove the files from the director and improv folders
-    director_says(8, "..... and SCENE! I think you should write another one, director.")
+    director_says(8, "..... and SCENE! BRAVO! Even better than the last one. Wow, such genius! I think you should write another one, Director.")
     close_window_signal.set()
     # empty the director and improv folders
     set_image_as_bg("BG1")

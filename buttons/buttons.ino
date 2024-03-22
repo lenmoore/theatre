@@ -187,7 +187,7 @@ void waveLightsNonblocking() {
 void travelingDotEffect() {
     static unsigned long lastUpdate = 0;
     static int currentLed = 0;
-    const int updateInterval = 100; // Speed of the traveling dot
+    const int updateInterval = 10; // Speed of the traveling dot
 
     unsigned long currentMillis = millis();
     if (currentMillis - lastUpdate >= updateInterval) {
@@ -216,7 +216,7 @@ bool redBallDirection = false; // true means moving forward, false means moving 
 
 void dualPingPongEffect() {
     static unsigned long lastUpdate = 0; // Time of last update
-    const long updateInterval = 150; // Time between updates, adjust for speed
+    const long updateInterval = 50; // Time between updates, adjust for speed
 
     unsigned long currentMillis = millis();
     if (currentMillis - lastUpdate >= updateInterval) {

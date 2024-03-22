@@ -93,7 +93,7 @@ def create_openai_scene(image_desc, prompt):
     messages=[
         {
         "role": "system", 
-        "content": "Hello, TheatreBot! Your task is to generate a text for a short scene, and output it using JSON. If the comedy level in the prompt given is under 60, the scene will be in the style of Werner Herzog, the storyteller's voice' will be onyx. It is the MOST important that you use the described characters from the input - their NAME and their VOICE need to be clearly defined. Prompt: " + prompt
+        "content": "Hello, TheatreBot! Your task is to generate a text for a short scene, and output it using JSON. If the comedy level in the prompt given is under 60, the scene will be in the style of Werner Herzog, the storyteller's voice' will be onyx. It is the MOST important that you use the described characters from the input - their NAME and their VOICE need to be clearly defined. Their props are very important. Prompt: " + prompt
         },
         {
         "role": "system",
