@@ -2,7 +2,7 @@ from image_encoder import encode_image
 import requests
 from openai import OpenAI
 from pathlib import Path
-
+import image_encoder
 import json
 import os
 from dotenv import load_dotenv
@@ -29,7 +29,7 @@ def create_openai_request(base64_image, prompt):
                 "content": [
                     {
                         "type": "text",
-                        "text": "I'm generating an improv theatre scene with the characters in the image. Please tell me who they are in the following format. LEFT: [character name]=[character clothes, profession, role: antagonist/protagonist, whisper: your recommendation for Whisper API voice], RIGHT: [character name]=[character clothes, profession, role: antagonist/protagonist, whisper: your recommendation for Whisper API voice]. PROPS: [props or other creatures in the scene]. Also, recommend suitable Whisper API voices for each character and a storyteller voice if necessary. the prompt that will be used for the text will be this:" + prompt + ".. so please make the characters match the scene."
+                        "text": "I'm generating an improv theatre scene with the characters in the image. Even if the image is hard to see, please try your best. Please tell me who they are in the following format. LEFT: [character name]=[character clothes, profession, role: antagonist/protagonist, whisper: your recommendation for Whisper API voice], RIGHT: [character name]=[character clothes, profession, role: antagonist/protagonist, whisper: your recommendation for Whisper API voice]. PROPS: [props or other creatures in the scene]. Also, recommend suitable Whisper API voices for each character and a storyteller voice if necessary. the prompt that will be used for the text will be this:" + prompt + ".. so please make the characters match the scene."
                     },
                     {
                         "type": "image_url",
@@ -114,10 +114,12 @@ def get_improv_whisper(order_number, voice, text, character):
     return False
 
 # Example usage
-# if __name__ == "__main__":
-#     image_path = "../pictures/Photo March 2 2024.jpg"
-#     result = create_openai_request(image_path)
-#     scene = create_openai_scene(result)
-#     print(scene)
+if __name__ == "__main__":
+    image_path = "../pictures/photo.jpg"
+    base64_image = encode_image(image_path)
+    prompt = "Please generate a 2-min improv theatre scene with the characters in the image. Setting: hairdresser's. Style: Romeo and Juliet. Comedy: 80. Drama: 20."
+    result = create_openai_request(base64_image, prompt)
+    scene = create_openai_scene(result, prompt)
+    print(scene)
 
 
